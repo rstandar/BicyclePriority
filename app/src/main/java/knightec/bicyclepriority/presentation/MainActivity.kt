@@ -6,64 +6,129 @@
 
 package knightec.bicyclepriority.presentation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.*
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import knightec.bicyclepriority.R
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import org.json.JSONObject
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WearApp("Android")
+            viewTrafficLight()
         }
     }
 }
 
+/*
+@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
-fun WearApp(greetingName: String) {
+fun DefaultPreview() {
+    viewTrafficLight()
+}
+*/
+
+fun volleyStringReq(ctx: Context, result: MutableState<String>, url: String) {
+    val queue = Volley.newRequestQueue(ctx)
+
+    val req = StringRequest(Request.Method.GET, url,
+        {
+                response -> result.value = response
+        },
+        {
+                error -> print("ERROR:  $error")
+        }
+    )
+    queue.add(req)
+}
+
+fun volleyJSONReq(ctx : Context, result: MutableState<JSONObject>, url: String){
+    val queue = Volley.newRequestQueue(ctx)
+    val req = JsonObjectRequest(Request.Method.GET, url, JSONObject(),
+        {
+                response -> result.value = response
+        },
+        {
+                error -> print("ERROR: $error")
+        }
+    )
+    queue.add(req)
+}
+
+@Composable
+fun viewTrafficLight(){
+    val context = LocalContext.current
+    val result = remember {mutableStateOf(JSONObject())}
+    //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
+    val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
+
+    volleyJSONReq(context,result, url)
+
     BicyclePriorityTheme {
-        /* If you have enough items in your list, use [ScalingLazyColumn] which is an optimized
-         * version of LazyColumn for wear devices with some added features. For more information,
-         * see d.android.com/wear/compose.
-         */
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment=Alignment.CenterHorizontally
         ) {
-            Greeting(greetingName = greetingName)
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.primary,
+                text = getText(result)
+            )
+            Button(
+                onClick = { volleyJSONReq(context,result, url) }
+            ) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = "Poll"
+                )
+            }
         }
     }
 }
 
-@Composable
-fun Greeting(greetingName: String) {
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colors.primary,
-        text = stringResource(R.string.hello_world, greetingName)
-    )
+
+
+fun getText(result: MutableState<JSONObject>) : String{
+    val text =
+        if(result.value.has("status") && result.value.has("time_left")){
+            ""+result.value.get("status") + " light\n" + result.value.get("time_left") + " seconds left"
+        } else if(result.value.has("status") && !result.value.has("time_left")){
+            "Could not find time_left"
+        } else if(!result.value.has("status") && result.value.has("time_left")){
+            "Could not find status"
+        } else{
+            "Could not find light"
+        }
+    return text
 }
 
-@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    WearApp("Preview Android")
-}
