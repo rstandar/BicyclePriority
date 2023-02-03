@@ -8,6 +8,8 @@ package knightec.bicyclepriority.presentation
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -46,13 +48,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/*
+
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    viewTrafficLight()
+    //viewTrafficLight()
 }
-*/
+
 
 fun volleyStringReq(ctx: Context, result: MutableState<String>, url: String) {
     val queue = Volley.newRequestQueue(ctx)
@@ -68,7 +70,7 @@ fun volleyStringReq(ctx: Context, result: MutableState<String>, url: String) {
     queue.add(req)
 }
 
-fun volleyJSONReq(ctx : Context, result: MutableState<JSONObject>, url: String){
+fun volleyJSONReq (ctx : Context, result: MutableState<JSONObject>, url: String){
     val queue = Volley.newRequestQueue(ctx)
     val req = JsonObjectRequest(Request.Method.GET, url, JSONObject(),
         {
@@ -87,8 +89,15 @@ fun viewTrafficLight(){
     val result = remember {mutableStateOf(JSONObject())}
     //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
     val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
+    val pollHandler = Handler(Looper.getMainLooper())
 
-    volleyJSONReq(context,result, url)
+    pollHandler.post(object: Runnable {
+        override fun run(){
+            volleyJSONReq(context,result, url)
+            pollHandler.postDelayed(this, 1000)
+        }
+    })
+
 
     BicyclePriorityTheme {
         Column(
@@ -104,6 +113,7 @@ fun viewTrafficLight(){
                 color = MaterialTheme.colors.primary,
                 text = getText(result)
             )
+            /*
             Button(
                 onClick = { volleyJSONReq(context,result, url) }
             ) {
@@ -111,7 +121,7 @@ fun viewTrafficLight(){
                     textAlign = TextAlign.Center,
                     text = "Poll"
                 )
-            }
+            } */
         }
     }
 }
