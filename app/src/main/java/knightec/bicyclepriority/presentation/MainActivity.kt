@@ -90,13 +90,16 @@ fun viewTrafficLight(){
     //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
     val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
     val pollHandler = Handler(Looper.getMainLooper())
+    var running : Boolean = true;
 
-    pollHandler.post(object: Runnable {
+    val poll = object: Runnable {
         override fun run(){
             volleyJSONReq(context,result, url)
             pollHandler.postDelayed(this, 1000)
         }
-    })
+    }
+
+    pollHandler.post(poll)
 
 
     BicyclePriorityTheme {
@@ -113,15 +116,18 @@ fun viewTrafficLight(){
                 color = MaterialTheme.colors.primary,
                 text = getText(result)
             )
-            /*
             Button(
-                onClick = { volleyJSONReq(context,result, url) }
+                onClick = {
+                    if(running) pollHandler.removeCallbacks(poll)
+                    else pollHandler.post(poll)
+                    running = !running
+                }
             ) {
                 Text(
                     textAlign = TextAlign.Center,
-                    text = "Poll"
+                    text = "Start/stop",
                 )
-            } */
+            }
         }
     }
 }
