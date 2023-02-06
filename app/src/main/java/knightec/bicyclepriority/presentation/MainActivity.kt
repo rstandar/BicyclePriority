@@ -8,6 +8,8 @@ package knightec.bicyclepriority.presentation
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -46,13 +48,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/*
+
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    viewTrafficLight()
+    //viewTrafficLight()
 }
-*/
+
 
 fun volleyStringReq(ctx: Context, result: MutableState<String>, url: String) {
     val queue = Volley.newRequestQueue(ctx)
@@ -68,7 +70,7 @@ fun volleyStringReq(ctx: Context, result: MutableState<String>, url: String) {
     queue.add(req)
 }
 
-fun volleyJSONReq(ctx : Context, result: MutableState<JSONObject>, url: String){
+fun volleyJSONReq (ctx : Context, result: MutableState<JSONObject>, url: String){
     val queue = Volley.newRequestQueue(ctx)
     val req = JsonObjectRequest(Request.Method.GET, url, JSONObject(),
         {
@@ -87,8 +89,18 @@ fun viewTrafficLight(){
     val result = remember {mutableStateOf(JSONObject())}
     //val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
     val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
+    val pollHandler = Handler(Looper.getMainLooper())
+    var running : Boolean = true;
 
-    volleyJSONReq(context,result, url)
+    val poll = object: Runnable {
+        override fun run(){
+            volleyJSONReq(context,result, url)
+            pollHandler.postDelayed(this, 1000)
+        }
+    }
+
+    pollHandler.post(poll)
+
 
     BicyclePriorityTheme {
         Column(
@@ -105,11 +117,15 @@ fun viewTrafficLight(){
                 text = getText(result)
             )
             Button(
-                onClick = { volleyJSONReq(context,result, url) }
+                onClick = {
+                    if(running) pollHandler.removeCallbacks(poll)
+                    else pollHandler.post(poll)
+                    running = !running
+                }
             ) {
                 Text(
                     textAlign = TextAlign.Center,
-                    text = "Poll"
+                    text = "Start/stop",
                 )
             }
         }
