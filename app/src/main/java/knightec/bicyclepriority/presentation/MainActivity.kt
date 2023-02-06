@@ -85,7 +85,7 @@ fun volleyJSONReq(ctx : Context, result: MutableState<JSONObject>, url: String){
 fun viewTrafficLight(){
     val context = LocalContext.current
     val result = remember {mutableStateOf(JSONObject())}
-    //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
+    //val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
     val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
 
     volleyJSONReq(context,result, url)
