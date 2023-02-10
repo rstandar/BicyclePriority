@@ -6,10 +6,15 @@
 
 package knightec.bicyclepriority.presentation
 
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -27,12 +32,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import knightec.bicyclepriority.R
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
@@ -40,12 +48,68 @@ import org.json.JSONObject
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var fusedLocationProvider : FusedLocationProviderClient
+    private lateinit var latitude : TextView
+    private lateinit var longitude : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             viewTrafficLight()
         }
     }
+    fun getLocation(){
+        fusedLocationProvider = LocationServices.getFusedLocationProviderClient(ctx)
+        if(checkPermissions(this)){
+            if(locationIsEnabled()){
+
+            }
+        } else {
+            requestPermission(this)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if(requestCode== PERMISSION_REQUEST_ACCESS_LOCATION){
+            if(grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(applicationContext,"Granted",Toast.LENGTH_SHORT).show()
+                getLocation()
+            } else{
+                Toast.makeText(applicationContext,"Denied",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun locationIsEnabled(): Boolean {
+        val locationManager : LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)||locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun requestPermission(ctx : Context) {
+        ActivityCompat.requestPermissions(
+            ctx as Activity, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_ACCESS_LOCATION)
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_ACCESS_LOCATION = 100
+    }
+
+    /* Checks if user has given permissions for usage of location.
+    * Returns true if all necessary permissions allowed otherwise returns false.
+    */
+    private fun checkPermissions(ctx : Context) : Boolean {
+        if(ActivityCompat.checkSelfPermission(ctx,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(ctx,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
+            return true
+        }
+        return false
+    }
+
 }
 
 
@@ -134,6 +198,7 @@ fun viewTrafficLight(){
 
 
 
+
 fun getText(result: MutableState<JSONObject>) : String{
     val text =
         if(result.value.has("status") && result.value.has("time_left")){
@@ -143,7 +208,7 @@ fun getText(result: MutableState<JSONObject>) : String{
         } else if(!result.value.has("status") && result.value.has("time_left")){
             "Could not find status"
         } else{
-            "Could not find light"
+            "Could not find traffic light"
         }
     return text
 }
