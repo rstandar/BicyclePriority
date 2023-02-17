@@ -6,10 +6,13 @@
 
 package knightec.bicyclepriority.presentation
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.media.audiofx.Equalizer.Settings
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,55 +20,93 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import knightec.bicyclepriority.R
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import org.json.JSONObject
 
-
 class MainActivity : ComponentActivity() {
-    private lateinit var fusedLocationProvider : FusedLocationProviderClient
-    private lateinit var latitude : TextView
-    private lateinit var longitude : TextView
+
+    private val locationViewModel : LocationViewModel = LocationViewModel(this.application)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val location by locationViewModel.getLocationData().observeAsState()
         setContent {
-            viewTrafficLight()
+            BicyclePriorityTheme {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.background),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment=Alignment.CenterHorizontally
+                ) {
+
+
+                }
+            }
         }
     }
-    fun getLocation(){
-        fusedLocationProvider = LocationServices.getFusedLocationProviderClient(ctx)
-        if(checkPermissions(this)){
-            if(locationIsEnabled()){
 
-            }
-        } else {
-            requestPermission(this)
+    @Composable
+    private fun GPS(location: LocationDetails?) {
+        location?.let{
+            Text(text = location.latitude)
+            Text(text = location.longitude)
         }
+    }
+
+    private fun getLocation(){
+        //todo integrate with locationData
+        if(locationIsEnabled()){
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermission(this)
+                } else{
+                    /*
+                    fusedLocationProvider.lastLocation.addOnCompleteListener(this){
+                        task->
+                        val location : android.location.Location ?= task.result
+                        if (location == null){
+                            Toast.makeText(this,"Null received",Toast.LENGTH_SHORT).show()
+                        } else{
+                            Toast.makeText(this,"Get success",Toast.LENGTH_SHORT).show()
+                            latitude = ""+location.latitude
+                            longitude = ""+location.longitude
+                        }
+                    }*/
+                }
+            } else{
+                Toast.makeText(this,"Turn on location",Toast.LENGTH_SHORT).show()
+                val intent = Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+                getLocation()
+            }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -81,34 +122,26 @@ class MainActivity : ComponentActivity() {
                 getLocation()
             } else{
                 Toast.makeText(applicationContext,"Denied",Toast.LENGTH_SHORT).show()
+                getLocation()
             }
         }
     }
     private fun locationIsEnabled(): Boolean {
         val locationManager : LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)||locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     private fun requestPermission(ctx : Context) {
         ActivityCompat.requestPermissions(
-            ctx as Activity, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_ACCESS_LOCATION)
+            ctx as Activity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_ACCESS_LOCATION)
+
     }
 
     companion object {
         private const val PERMISSION_REQUEST_ACCESS_LOCATION = 100
     }
 
-    /* Checks if user has given permissions for usage of location.
-    * Returns true if all necessary permissions allowed otherwise returns false.
-    */
-    private fun checkPermissions(ctx : Context) : Boolean {
-        if(ActivityCompat.checkSelfPermission(ctx,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(ctx,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
-            return true
-        }
-        return false
-    }
 
 }
 
@@ -119,20 +152,6 @@ fun DefaultPreview() {
     //viewTrafficLight()
 }
 
-
-fun volleyStringReq(ctx: Context, result: MutableState<String>, url: String) {
-    val queue = Volley.newRequestQueue(ctx)
-
-    val req = StringRequest(Request.Method.GET, url,
-        {
-                response -> result.value = response
-        },
-        {
-                error -> print("ERROR:  $error")
-        }
-    )
-    queue.add(req)
-}
 
 fun volleyJSONReq (ctx : Context, result: MutableState<JSONObject>, url: String){
     val queue = Volley.newRequestQueue(ctx)
