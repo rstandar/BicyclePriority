@@ -16,6 +16,7 @@ import android.media.audiofx.Equalizer.Settings
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -44,35 +45,42 @@ import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
-    private val locationViewModel : LocationViewModel = LocationViewModel(this.application)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val location by locationViewModel.getLocationData().observeAsState()
+        val locationViewModel : LocationViewModel = LocationViewModel(this.application)
+        locationViewModel.startLocationUpdates()
+
         setContent {
-            BicyclePriorityTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colors.background),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment=Alignment.CenterHorizontally
-                ) {
+            //viewTrafficLight()
+            GPS(locationViewModel)
+        }
+    }
 
 
+
+    @Composable
+    private fun GPS(locationViewModel : LocationViewModel) {
+        val location by locationViewModel.getLocationData().observeAsState()
+        print(location)
+        BicyclePriorityTheme {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment=Alignment.CenterHorizontally) {
+                location?.let{
+                    Text(text = "latitude")
+                    Text(text = "longitude")
                 }
             }
         }
+
     }
 
-    @Composable
-    private fun GPS(location: LocationDetails?) {
-        location?.let{
-            Text(text = location.latitude)
-            Text(text = location.longitude)
-        }
-    }
+    /*
 
     private fun getLocation(){
         //todo integrate with locationData
@@ -141,7 +149,7 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val PERMISSION_REQUEST_ACCESS_LOCATION = 100
     }
-
+*/
 
 }
 

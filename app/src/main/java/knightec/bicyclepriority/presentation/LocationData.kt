@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -23,11 +24,13 @@ class LocationData (var context : Context) : LiveData<LocationDetails>() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            Toast.makeText(context,"Permission not granted onActive",Toast.LENGTH_LONG).show()
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener {
             location -> location.also {
-                setLocationData(it)
+                location ->
+                setLocationData(location)
             }
         }
     }
@@ -41,8 +44,10 @@ class LocationData (var context : Context) : LiveData<LocationDetails>() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            Toast.makeText(context,"StartLocationUpdates permission check failed",Toast.LENGTH_LONG).show()
             return
         }
+        Toast.makeText(context,"StartLocationUpdates started requesting locations",Toast.LENGTH_LONG).show()
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
     }
 
@@ -50,18 +55,20 @@ class LocationData (var context : Context) : LiveData<LocationDetails>() {
         location?.let {
             location ->
             value = LocationDetails(location.longitude.toString(), location.latitude.toString())
+            Toast.makeText(context,"Location set",Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onInactive() {
         super.onInactive()
+        Toast.makeText(context,"Inactive activated",Toast.LENGTH_LONG).show()
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            locationResult ?: return
+            if(locationResult == null) {return}
             for(location in locationResult.locations){
                 setLocationData(location)
             }
