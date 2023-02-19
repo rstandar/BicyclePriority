@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -45,112 +46,69 @@ import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
-
+    lateinit var locationViewModel: LocationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val locationViewModel : LocationViewModel = LocationViewModel(this.application)
-        locationViewModel.startLocationUpdates()
+        locationViewModel = LocationViewModel(this.application)
+        prepLocationUpdates()
 
         setContent {
             //viewTrafficLight()
-            GPS(locationViewModel)
+            GPS()
         }
     }
 
+    private fun prepLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            requestLocationUpdates()
+        } else{
+            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
 
+    private val requestSinglePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        isGranted ->
+        if(isGranted){
+            requestLocationUpdates()
+        } else {
+            Toast.makeText(this,"GPS unavailable", Toast.LENGTH_SHORT)
+        }
+    }
 
+    private fun requestLocationUpdates(){
+        locationViewModel.startLocationUpdates()
+    }
     @Composable
-    private fun GPS(locationViewModel : LocationViewModel) {
+    private fun GPS() {
         val location by locationViewModel.getLocationData().observeAsState()
-        print(location)
-        BicyclePriorityTheme {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment=Alignment.CenterHorizontally) {
-                location?.let{
-                    Text(text = "latitude")
-                    Text(text = "longitude")
-                }
-            }
-        }
 
-    }
-
-    /*
-
-    private fun getLocation(){
-        //todo integrate with locationData
         if(locationIsEnabled()){
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    requestPermission(this)
-                } else{
-                    /*
-                    fusedLocationProvider.lastLocation.addOnCompleteListener(this){
-                        task->
-                        val location : android.location.Location ?= task.result
-                        if (location == null){
-                            Toast.makeText(this,"Null received",Toast.LENGTH_SHORT).show()
-                        } else{
-                            Toast.makeText(this,"Get success",Toast.LENGTH_SHORT).show()
-                            latitude = ""+location.latitude
-                            longitude = ""+location.longitude
-                        }
-                    }*/
+            BicyclePriorityTheme {
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colors.background),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment=Alignment.CenterHorizontally) {
+                    location?.let{
+                        Text(text = location!!.latitude)
+                        Text(text = location!!.longitude)
+                    }
                 }
-            } else{
-                Toast.makeText(this,"Turn on location",Toast.LENGTH_SHORT).show()
-                val intent = Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-                getLocation()
             }
-
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if(requestCode== PERMISSION_REQUEST_ACCESS_LOCATION){
-            if(grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(applicationContext,"Granted",Toast.LENGTH_SHORT).show()
-                getLocation()
-            } else{
-                Toast.makeText(applicationContext,"Denied",Toast.LENGTH_SHORT).show()
-                getLocation()
-            }
+        } else {
+            Toast.makeText(this,"Location must be enabled for application to work",Toast.LENGTH_LONG)
+            val intent = Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+            GPS()
         }
     }
+
     private fun locationIsEnabled(): Boolean {
         val locationManager : LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
-
-    private fun requestPermission(ctx : Context) {
-        ActivityCompat.requestPermissions(
-            ctx as Activity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_ACCESS_LOCATION)
-
-    }
-
-    companion object {
-        private const val PERMISSION_REQUEST_ACCESS_LOCATION = 100
-    }
-*/
-
 }
 
 
