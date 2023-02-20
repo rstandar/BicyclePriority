@@ -51,6 +51,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        /* Get the view model for locations and call method for checking/receiving permissions from user */
         locationViewModel = LocationViewModel(this.application)
         prepLocationUpdates()
 
@@ -60,6 +62,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
     private fun prepLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             requestLocationUpdates()
@@ -68,6 +71,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** In-line function for requesting permission for locations from user.*/
     private val requestSinglePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
         isGranted ->
         if(isGranted){
@@ -77,9 +81,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Method for starting location updates.*/
     private fun requestLocationUpdates(){
         locationViewModel.startLocationUpdates()
     }
+
+    /** Component for displaying gps coordinates of the user.*/
     @Composable
     private fun GPS() {
         val location by locationViewModel.getLocationData().observeAsState()
@@ -105,6 +112,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Method for checking if location services are enabled on device. Return boolean value depending on result.*/
     private fun locationIsEnabled(): Boolean {
         val locationManager : LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
