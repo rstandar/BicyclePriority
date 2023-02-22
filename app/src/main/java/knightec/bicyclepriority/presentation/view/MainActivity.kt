@@ -4,25 +4,20 @@
  * changes to the libraries and their usages.
  */
 
-package knightec.bicyclepriority.presentation
+package knightec.bicyclepriority.presentation.view
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.media.audiofx.Equalizer.Settings
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
@@ -37,23 +32,21 @@ import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.gms.location.*
-import knightec.bicyclepriority.R
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
+import knightec.bicyclepriority.presentation.viewmodel.MainActivityViewModel
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
-    lateinit var locationViewModel: LocationViewModel
+    lateinit var mainActivityViewModel: MainActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
         /* Get the view model for locations and call method for checking/receiving permissions from user */
-        locationViewModel = LocationViewModel(this.application)
+        mainActivityViewModel = MainActivityViewModel(this.application)
         prepLocationUpdates()
 
         setContent {
@@ -83,13 +76,13 @@ class MainActivity : ComponentActivity() {
 
     /** Method for starting location updates.*/
     private fun requestLocationUpdates(){
-        locationViewModel.startLocationUpdates()
+        mainActivityViewModel.startLocationUpdates()
     }
 
     /** Component for displaying gps coordinates of the user.*/
     @Composable
     private fun GPS() {
-        val location by locationViewModel.getLocationData().observeAsState()
+        val location by mainActivityViewModel.getLocationData().observeAsState()
 
         if(locationIsEnabled()){
             BicyclePriorityTheme {
