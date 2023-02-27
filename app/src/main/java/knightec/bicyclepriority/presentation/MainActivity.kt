@@ -14,6 +14,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,15 +41,71 @@ import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var locationview : LocationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val locationview = LocationView(this.application)
-
-
+        prepLocationUpdates()
+        createLocationView()
         setContent {
             //viewTrafficLight()
             locationview.GPS()
         }
+
+    }
+
+    private fun createLocationView() {
+        if (locationIsEnabled()) {
+            val mainActivityViewModel : MainActivityViewModel = MainActivityViewModel(this.application)
+            locationview = LocationView(mainActivityViewModel)
+        }
+        else {
+            Toast.makeText(
+                this,
+                "Location must be enabled for application to work",
+                Toast.LENGTH_LONG
+            )
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+            createLocationView()
+        }
+    }
+
+    /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
+    private fun prepLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            requestLocationUpdates()
+        } else {
+            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    /** In-line function for requesting permission for locations from user.*/
+    private val requestSinglePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                requestLocationUpdates()
+            } else {
+                Toast.makeText(this, "GPS unavailable", Toast.LENGTH_SHORT)
+            }
+        }
+
+    /** Method for starting location updates.*/
+    private fun requestLocationUpdates() {
+
+    }
+
+    /** Method for checking if location services are enabled on device. Return boolean value depending on result.*/
+    private fun locationIsEnabled(): Boolean {
+        val locationManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
 }

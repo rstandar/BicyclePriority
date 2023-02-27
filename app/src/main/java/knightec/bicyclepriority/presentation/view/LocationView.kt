@@ -1,6 +1,7 @@
 package knightec.bicyclepriority.presentation.view
 
 import android.Manifest
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -29,64 +30,21 @@ import androidx.wear.compose.material.Text
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.viewmodel.MainActivityViewModel
 
-class LocationView(app: Application) : ComponentActivity() {
+class LocationView(viewmodel: MainActivityViewModel) {
 
     /* Get the view model for locations and call method for checking/receiving permissions from user */
-    private lateinit var mainActivityViewModel: MainActivityViewModel
-    private val appPriv : Application = app
+    private val mainActivityViewModel: MainActivityViewModel = viewmodel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mainActivityViewModel = MainActivityViewModel(appPriv)
-        prepLocationUpdates()
-    }
     init {
-
-    }
-
-    /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
-    private fun prepLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            requestLocationUpdates()
-        } else {
-            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }
-
-    /** In-line function for requesting permission for locations from user.*/
-    private val requestSinglePermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                requestLocationUpdates()
-            } else {
-                Toast.makeText(this, "GPS unavailable", Toast.LENGTH_SHORT)
-            }
-        }
-
-    /** Method for starting location updates.*/
-    private fun requestLocationUpdates() {
         mainActivityViewModel.startLocationUpdates()
     }
 
-    /** Method for checking if location services are enabled on device. Return boolean value depending on result.*/
-    private fun locationIsEnabled(): Boolean {
-        val locationManager: LocationManager =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
 
     /** Component for displaying gps coordinates of the user.*/
     @Composable
     fun GPS() {
-        val location by mainActivityViewModel.getLocationData().observeAsState()
+        //val location by mainActivityViewModel.getLocationData().observeAsState()
 
-        if (locationIsEnabled()) {
             BicyclePriorityTheme {
                 Column(
                     modifier = Modifier
@@ -95,21 +53,13 @@ class LocationView(app: Application) : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    location?.let {
+                    /*location?.let {
                         Text(text = location!!.latitude)
                         Text(text = location!!.longitude)
-                    }
+                    }*/
+                    Text(text = "TEST")
                 }
             }
-        } else {
-            Toast.makeText(
-                this,
-                "Location must be enabled for application to work",
-                Toast.LENGTH_LONG
-            )
-            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivity(intent)
-            GPS()
-        }
+        
     }
 }

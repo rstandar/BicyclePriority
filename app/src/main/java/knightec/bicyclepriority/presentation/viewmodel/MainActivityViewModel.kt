@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import knightec.bicyclepriority.presentation.repository.LocationData
 
-class MainActivityViewModel (application: Application) : AndroidViewModel(application) {
-    private val locationData = LocationData(application)
+class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val app = getApplication<Application>()
+
+    private val locationData = LocationData(app)
 
     /** Used to get location data after location updates has been started */
     fun getLocationData() = locationData
