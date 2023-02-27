@@ -8,9 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,18 +17,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import knightec.bicyclepriority.presentation.getText
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 import org.json.JSONObject
 
 class TrafficLightView (viewModel: TrafficLightViewModel){
-    val trafficLightViewModel = viewModel
+    private val trafficLightViewModel = viewModel
 
     @Composable
     fun viewTrafficLight(){
-        val context = LocalContext.current
-        val result = remember {mutableStateOf(JSONObject())}
+        val result = trafficLightViewModel.getTrafficLightStatus().observeAsState()
 
         BicyclePriorityTheme {
             Column(
@@ -43,7 +40,7 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.primary,
-                    text = trafficLightViewModel.getText(result)
+                    text = trafficLightViewModel.getText(result as State<JSONObject>)
                 )
                 Button(
                     onClick = {

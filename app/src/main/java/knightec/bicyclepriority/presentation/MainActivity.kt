@@ -36,20 +36,25 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.view.LocationView
+import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.MainActivityViewModel
+import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var locationview : LocationView
+    private lateinit var locationView : LocationView
+    private lateinit var trafficLightView : TrafficLightView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prepLocationUpdates()
-        createLocationView()
+        val trafficLightViewModel = TrafficLightViewModel(this.application)
+        trafficLightView = TrafficLightView(trafficLightViewModel)
+        //prepLocationUpdates()
+        //createLocationView()
         setContent {
-            //viewTrafficLight()
-            locationview.GPS()
+            //locationView.GPS()
+            trafficLightView.viewTrafficLight()
         }
 
     }
@@ -57,7 +62,7 @@ class MainActivity : ComponentActivity() {
     private fun createLocationView() {
         if (locationIsEnabled()) {
             val mainActivityViewModel : MainActivityViewModel = MainActivityViewModel(this.application)
-            locationview = LocationView(mainActivityViewModel)
+            locationView = LocationView(mainActivityViewModel)
         }
         else {
             Toast.makeText(
@@ -70,6 +75,7 @@ class MainActivity : ComponentActivity() {
             createLocationView()
         }
     }
+
 
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
     private fun prepLocationUpdates() {

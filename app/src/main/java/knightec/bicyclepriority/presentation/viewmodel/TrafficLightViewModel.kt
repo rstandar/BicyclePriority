@@ -3,11 +3,9 @@ package knightec.bicyclepriority.presentation.viewmodel
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import knightec.bicyclepriority.presentation.repository.TrafficLightHTTP
 import org.json.JSONObject
 
@@ -16,7 +14,7 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
     //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
 
     private val trafficLight = TrafficLightHTTP()
-    var result : JSONObject = JSONObject()
+    var result : MutableLiveData<JSONObject> = MutableLiveData()
 
     private val pollHandler = Handler(Looper.getMainLooper())
     private var running : Boolean = true;
@@ -27,9 +25,11 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun getTrafficLightStatus(){
-
+    init{
+        startPolling()
     }
+
+    fun getTrafficLightStatus() = result
 
     fun updatePoll(){
         if(running) stopPolling()
@@ -45,18 +45,21 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
         pollHandler.removeCallbacks(poll)
     }
 
-    fun getText(result: MutableState<JSONObject>) : String{
-        val text =
-            if(result.value.has("status") && result.value.has("time_left")){
-                ""+result.value.get("status") + " light\n" + result.value.get("time_left") + " seconds left"
-            } else if(result.value.has("status") && !result.value.has("time_left")){
-                "Could not find time_left"
-            } else if(!result.value.has("status") && result.value.has("time_left")){
-                "Could not find status"
-            } else{
-                "Could not find traffic light"
-            }
-        return text
+    fun getText(result: State<JSONObject>) : String{
+        result?.let{
+            val text =
+                if (result.value.has("status") && result.value.has("time_left")) {
+                    "" + result.value.get("status") + " light\n" + result.value.get("time_left") + " seconds left"
+                } else if (result.value.has("status") && !result.value.has("time_left")) {
+                    "Could not find time_left"
+                } else if (!result.value.has("status") && result.value.has("time_left")) {
+                    "Could not find status"
+                } else {
+                    "Could not find traffic light"
+                }
+            return text
+        }
+        return "Could not find traffic light"
     }
 
 }
