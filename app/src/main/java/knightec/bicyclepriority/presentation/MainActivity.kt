@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            requestLocationUpdates()
+            return
         } else {
             requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
@@ -87,17 +87,11 @@ class MainActivity : ComponentActivity() {
     /** In-line function for requesting permission for locations from user.*/
     private val requestSinglePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                requestLocationUpdates()
-            } else {
+            if (!isGranted) {
                 Toast.makeText(this, "GPS unavailable", Toast.LENGTH_SHORT)
             }
         }
 
-    /** Method for starting location updates.*/
-    private fun requestLocationUpdates() {
-
-    }
 
     /** Method for checking if location services are enabled on device. Return boolean value depending on result.*/
     private fun locationIsEnabled(): Boolean {
@@ -109,7 +103,6 @@ class MainActivity : ComponentActivity() {
     }
 
 }
-
 
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable

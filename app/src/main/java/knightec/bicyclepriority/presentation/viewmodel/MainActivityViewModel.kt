@@ -6,9 +6,7 @@ import knightec.bicyclepriority.presentation.repository.LocationData
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val app = getApplication<Application>()
-
-    private val locationData = LocationData(app)
+    private val locationData = LocationData(application)
 
     /** Used to get location data after location updates has been started */
     fun getLocationData() = locationData

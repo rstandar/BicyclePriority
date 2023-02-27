@@ -43,23 +43,22 @@ class LocationView(viewmodel: MainActivityViewModel) {
     /** Component for displaying gps coordinates of the user.*/
     @Composable
     fun GPS() {
-        //val location by mainActivityViewModel.getLocationData().observeAsState()
+        val location by mainActivityViewModel.getLocationData().observeAsState()
 
-            BicyclePriorityTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colors.background),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    /*location?.let {
-                        Text(text = location!!.latitude)
-                        Text(text = location!!.longitude)
-                    }*/
-                    Text(text = "TEST")
-                }
+        BicyclePriorityTheme {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colors.background),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                location?.let {
+                    Text(text = location!!.latitude)
+                    Text(text = location!!.longitude)
+                   }
             }
+        }
         
     }
 }
