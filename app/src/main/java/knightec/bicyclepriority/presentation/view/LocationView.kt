@@ -11,22 +11,22 @@ import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
-import knightec.bicyclepriority.presentation.viewmodel.MainActivityViewModel
+import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
 
-class LocationView(viewModel: MainActivityViewModel) {
+class LocationView(viewModel: LocationViewModel) {
 
     /* Get the view model for locations and call method for checking/receiving permissions from user */
-    private val mainActivityViewModel: MainActivityViewModel = viewModel
+    private val locationViewModel: LocationViewModel = viewModel
 
     init {
-        mainActivityViewModel.startLocationUpdates()
+        locationViewModel.startLocationUpdates()
     }
 
 
     /** Component for displaying gps coordinates of the user.*/
     @Composable
     fun GPS() {
-        val location by mainActivityViewModel.getLocationData().observeAsState()
+        val location by locationViewModel.getLocationData().observeAsState()
 
         BicyclePriorityTheme {
             Column(

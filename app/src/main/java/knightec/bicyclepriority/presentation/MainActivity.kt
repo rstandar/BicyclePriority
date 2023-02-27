@@ -12,34 +12,16 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
-import androidx.wear.compose.material.*
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
-import knightec.bicyclepriority.presentation.viewmodel.MainActivityViewModel
+import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
-import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
@@ -61,8 +43,8 @@ class MainActivity : ComponentActivity() {
 
     private fun createLocationView() {
         if (locationIsEnabled()) {
-            val mainActivityViewModel : MainActivityViewModel = MainActivityViewModel(this.application)
-            locationView = LocationView(mainActivityViewModel)
+            val locationViewModel : LocationViewModel = LocationViewModel(this.application)
+            locationView = LocationView(locationViewModel)
         }
         else {
             Toast.makeText(
