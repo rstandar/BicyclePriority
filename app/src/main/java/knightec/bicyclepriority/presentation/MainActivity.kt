@@ -4,7 +4,7 @@
  * changes to the libraries and their usages.
  */
 
-package knightec.bicyclepriority.presentation.view
+package knightec.bicyclepriority.presentation
 
 import android.Manifest
 import android.content.Context
