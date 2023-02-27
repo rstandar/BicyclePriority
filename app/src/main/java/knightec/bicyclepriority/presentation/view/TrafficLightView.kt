@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
     @Composable
     fun viewTrafficLight(){
         val result = trafficLightViewModel.getTrafficLightStatus().observeAsState()
+        val trafficLightStatus = result.value?.let { trafficLightStatus -> getText(trafficLightStatus) }
 
         BicyclePriorityTheme {
             Column(
@@ -36,12 +38,14 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment= Alignment.CenterHorizontally
             ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.primary,
-                    text = trafficLightViewModel.getText(result as State<JSONObject>)
-                )
+                if (trafficLightStatus != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colors.primary,
+                        text = trafficLightStatus
+                    )
+                }
                 Button(
                     onClick = {
                         trafficLightViewModel.updatePoll()
@@ -55,5 +59,20 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
             }
         }
     }
+
+    fun getText(result : JSONObject) : String{
+        val text =
+            if (result.has("status") && result.has("time_left")) {
+                "" + result.get("status") + " light\n" + result.get("time_left") + " seconds left"
+            } else if (result.has("status") && !result.has("time_left")) {
+                "Could not find time_left"
+            } else if (!result.has("status") && result.has("time_left")) {
+                "Could not find status"
+            } else {
+                "Could not find traffic light"
+            }
+        return text
+    }
+
 
 }

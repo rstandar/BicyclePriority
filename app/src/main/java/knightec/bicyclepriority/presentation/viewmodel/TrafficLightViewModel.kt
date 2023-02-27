@@ -45,21 +45,6 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
         pollHandler.removeCallbacks(poll)
     }
 
-    fun getText(result: State<JSONObject>) : String{
-        result?.let{
-            val text =
-                if (result.value.has("status") && result.value.has("time_left")) {
-                    "" + result.value.get("status") + " light\n" + result.value.get("time_left") + " seconds left"
-                } else if (result.value.has("status") && !result.value.has("time_left")) {
-                    "Could not find time_left"
-                } else if (!result.value.has("status") && result.value.has("time_left")) {
-                    "Could not find status"
-                } else {
-                    "Could not find traffic light"
-                }
-            return text
-        }
-        return "Could not find traffic light"
-    }
+
 
 }
