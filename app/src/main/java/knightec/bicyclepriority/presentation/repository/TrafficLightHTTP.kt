@@ -9,7 +9,7 @@ import org.json.JSONObject
 
 class TrafficLightHTTP {
 
-    fun requestTraficLightStatus (ctx : Context, result: MutableLiveData<JSONObject>, url: String){
+    fun requestTrafficLightStatus (ctx : Context, result: MutableLiveData<JSONObject>, url: String){
         val queue = Volley.newRequestQueue(ctx)
         val req = JsonObjectRequest(
             Request.Method.GET, url, JSONObject(),
