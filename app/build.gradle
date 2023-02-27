@@ -63,6 +63,7 @@ dependencies {
     implementation 'androidx.activity:activity:1.6.1'
     implementation 'androidx.fragment:fragment:1.5.5'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'androidx.compose.material:material:1.2.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"

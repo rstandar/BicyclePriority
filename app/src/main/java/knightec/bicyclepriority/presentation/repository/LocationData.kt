@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import com.google.android.gms.location.*
-import knightec.bicyclepriority.presentation.LocationDetails
 
 class LocationData (var context : Context) : LiveData<LocationDetails>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
