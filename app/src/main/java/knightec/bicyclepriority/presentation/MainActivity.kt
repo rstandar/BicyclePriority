@@ -97,96 +97,16 @@ class MainActivity : ComponentActivity() {
     private fun locationIsEnabled(): Boolean {
         val locationManager: LocationManager =
             getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
 }
 
-@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    //viewTrafficLight()
-}
-
-
-fun volleyJSONReq (ctx : Context, result: MutableState<JSONObject>, url: String){
-    val queue = Volley.newRequestQueue(ctx)
-    val req = JsonObjectRequest(Request.Method.GET, url, JSONObject(),
-        {
-                response -> result.value = response
-        },
-        {
-                error -> print("ERROR: $error")
-        }
-    )
-    queue.add(req)
-}
-
-@Composable
-fun viewTrafficLight(){
-    val context = LocalContext.current
-    val result = remember {mutableStateOf(JSONObject())}
-    //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
-    val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
-    val pollHandler = Handler(Looper.getMainLooper())
-    var running : Boolean = true;
-
-    val poll = object: Runnable {
-        override fun run(){
-            volleyJSONReq(context,result, url)
-            pollHandler.postDelayed(this, 1000)
-        }
-    }
-
-    pollHandler.post(poll)
-
-
-    BicyclePriorityTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment=Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.primary,
-                text = getText(result)
-            )
-            Button(
-                onClick = {
-                    if(running) pollHandler.removeCallbacks(poll)
-                    else pollHandler.post(poll)
-                    running = !running
-                }
-            ) {
-                Text(
-                    textAlign = TextAlign.Center,
-                    text = "Start/stop",
-                )
-            }
-        }
-    }
-}
 
 
 
 
-fun getText(result: MutableState<JSONObject>) : String{
-    val text =
-        if(result.value.has("status") && result.value.has("time_left")){
-            ""+result.value.get("status") + " light\n" + result.value.get("time_left") + " seconds left"
-        } else if(result.value.has("status") && !result.value.has("time_left")){
-            "Could not find time_left"
-        } else if(!result.value.has("status") && result.value.has("time_left")){
-            "Could not find status"
-        } else{
-            "Could not find traffic light"
-        }
-    return text
-}
+
+
 
