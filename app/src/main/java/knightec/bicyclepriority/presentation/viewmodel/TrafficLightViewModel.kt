@@ -20,7 +20,7 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
     private var running : Boolean = true;
     private val poll = object: Runnable {
         override fun run(){
-            trafficLight.requestTraficLightStatus(application.applicationContext,result, url)
+            trafficLight.requestTrafficLightStatus(application.applicationContext,result, url)
             pollHandler.postDelayed(this, 1000)
         }
     }
