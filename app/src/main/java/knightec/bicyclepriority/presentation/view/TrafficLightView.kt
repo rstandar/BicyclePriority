@@ -30,32 +30,30 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
         val result = trafficLightViewModel.getTrafficLightStatus().observeAsState()
         val trafficLightStatus = result.value?.let { trafficLightStatus -> getText(trafficLightStatus) }
 
-        BicyclePriorityTheme {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colors.background),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment= Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
+            //verticalArrangement = Arrangement.Center,
+            horizontalAlignment= Alignment.CenterHorizontally
+        ) {
+            if (trafficLightStatus != null) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.primary,
+                    text = trafficLightStatus
+                )
+            }
+            Button(
+                onClick = {
+                    trafficLightViewModel.updatePoll()
+                }
             ) {
-                if (trafficLightStatus != null) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colors.primary,
-                        text = trafficLightStatus
-                    )
-                }
-                Button(
-                    onClick = {
-                        trafficLightViewModel.updatePoll()
-                    }
-                ) {
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = "Start/stop",
-                    )
-                }
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = "Start/stop",
+                )
             }
         }
     }

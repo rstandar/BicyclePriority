@@ -17,7 +17,19 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.core.app.ActivityCompat
+import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.Text
+import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
@@ -32,11 +44,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
         trafficLightView = TrafficLightView(trafficLightViewModel)
-        //prepLocationUpdates()
-        //createLocationView()
+        prepLocationUpdates()
+        createLocationView()
         setContent {
-            //locationView.GPS()
-            trafficLightView.viewTrafficLight()
+            BicyclePriorityTheme {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.background),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment= Alignment.CenterHorizontally
+                ) {
+                    locationView.GPS()
+                    trafficLightView.viewTrafficLight()
+                }
+
+            }
         }
 
     }

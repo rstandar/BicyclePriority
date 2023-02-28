@@ -33,7 +33,7 @@ class LocationView(viewModel: LocationViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.background),
-                verticalArrangement = Arrangement.Center,
+                //verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 location?.let {
