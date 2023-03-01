@@ -28,7 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.rememberScalingLazyListState
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
@@ -43,21 +45,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
+
         trafficLightView = TrafficLightView(trafficLightViewModel)
         prepLocationUpdates()
         createLocationView()
         setContent {
             BicyclePriorityTheme {
-                Column(
+                val listState = rememberScalingLazyListState()
+                ScalingLazyColumn(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
                         .fillMaxSize()
                         .background(MaterialTheme.colors.background),
+                    state = listState,
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
-                    locationView.GPS()
-                    trafficLightView.viewTrafficLight()
+                    item{ locationView.GPS() }
+                    item{ trafficLightView.viewTrafficLight() }
                 }
 
             }

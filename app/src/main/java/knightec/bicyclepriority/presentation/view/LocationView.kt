@@ -27,19 +27,16 @@ class LocationView(viewModel: LocationViewModel) {
     @Composable
     fun GPS() {
         val location by locationViewModel.getLocationData().observeAsState()
-
-        BicyclePriorityTheme {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colors.background),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
                 //verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                location?.let {
-                    Text(text = location!!.latitude)
-                    Text(text = location!!.longitude)
-                   }
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            location?.let {
+                Text(text = location!!.latitude)
+                Text(text = location!!.longitude)
             }
         }
         
