@@ -13,14 +13,14 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
     val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
     //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
 
-    private val trafficLight = TrafficLightHTTP()
+    private val trafficLight = TrafficLightHTTP(application.applicationContext)
     var result : MutableLiveData<JSONObject> = MutableLiveData()
 
     private val pollHandler = Handler(Looper.getMainLooper())
     private var running : Boolean = true;
     private val poll = object: Runnable {
         override fun run(){
-            trafficLight.requestTrafficLightStatus(application.applicationContext,result, url)
+            trafficLight.requestTrafficLightStatus(result, url)
             pollHandler.postDelayed(this, 1000)
         }
     }

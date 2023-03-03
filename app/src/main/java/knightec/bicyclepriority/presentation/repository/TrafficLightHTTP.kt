@@ -7,10 +7,11 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 
-class TrafficLightHTTP {
+class TrafficLightHTTP(ctx : Context) {
 
-    fun requestTrafficLightStatus (ctx : Context, result: MutableLiveData<JSONObject>, url: String){
-        val queue = Volley.newRequestQueue(ctx)
+    private val queue = Volley.newRequestQueue(ctx)
+
+    fun requestTrafficLightStatus ( result: MutableLiveData<JSONObject>, url: String){
         val req = JsonObjectRequest(
             Request.Method.GET, url, JSONObject(),
             {
