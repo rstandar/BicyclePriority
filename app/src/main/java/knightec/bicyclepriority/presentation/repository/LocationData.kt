@@ -8,9 +8,10 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 
-class LocationData (var context : Context) : LiveData<LocationDetails>() {
+class LocationData (var context : Context) : MutableLiveData<LocationDetails>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     /** Method that adds a listener when the class is activated and correct permissions are granted.
