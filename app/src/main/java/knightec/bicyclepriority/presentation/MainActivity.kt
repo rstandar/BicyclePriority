@@ -27,10 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.app.ActivityCompat
-import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.Text
-import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.material.*
+import knightec.bicyclepriority.presentation.repository.SoundPlayer
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
@@ -45,6 +43,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
+
+        val soundPlayer = SoundPlayer(this)
 
         trafficLightView = TrafficLightView(trafficLightViewModel)
         prepLocationUpdates()
@@ -62,6 +62,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     item{ locationView.GPS() }
                     item{ trafficLightView.viewTrafficLight() }
+                    item{
+                        Button(onClick = {
+                            soundPlayer.testSound()
+                        }) {
+                            Text(text = "Play sound")
+                        }
+                    }
                 }
 
             }
