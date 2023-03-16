@@ -83,6 +83,7 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(intent)
             createLocationView()
+
         }
     }
 

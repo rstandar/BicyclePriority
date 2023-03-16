@@ -1,0 +1,15 @@
+service: THESIS-bicycle-priority
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: eu-north-1
+
+functions:
+  sim:
+    handler: handler.sim
+    events:
+      - httpApi:
+          path: /
+          method: get
