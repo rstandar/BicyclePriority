@@ -1,8 +1,7 @@
-package knightec.bicyclepriority.presentation.repository
+package knightec.bicyclepriority.presentation.utilities
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.widget.Toast
 import knightec.bicyclepriority.R
 
 class SoundPlayer(private val context: Context) {
@@ -16,7 +15,6 @@ class SoundPlayer(private val context: Context) {
             }
         }
         mediaPlayer.start()
-        Toast.makeText(context, "Sound played", Toast.LENGTH_SHORT).show()
     }
 
 }
