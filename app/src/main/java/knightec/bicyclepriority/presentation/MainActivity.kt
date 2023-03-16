@@ -11,11 +11,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.os.VibratorManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -23,16 +21,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.wear.compose.material.*
+import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.Vibrations
 import knightec.bicyclepriority.presentation.view.LocationView
@@ -49,14 +44,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
 
+        val soundPlayer = SoundPlayer(this)
+
         trafficLightView = TrafficLightView(trafficLightViewModel)
         prepLocationUpdates()
         createLocationView()
 
         val vibrations = Vibrations(this)
-
-
-
 
         var vibrating : Boolean= false;
 
@@ -88,6 +82,15 @@ class MainActivity : ComponentActivity() {
                             text = "Start/stop vibrating",
                         )
                     }}
+                    item{ locationView.GPS() }
+                    item{ trafficLightView.viewTrafficLight() }
+                    item{
+                        Button(onClick = {
+                            soundPlayer.testSound()
+                        }) {
+                            Text(text = "Play sound")
+                        }
+                    }
                 }
             }
         }
