@@ -34,6 +34,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
+import knightec.bicyclepriority.presentation.utilities.Vibrations
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
@@ -43,7 +44,6 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
-    private lateinit var vibrator : Vibrator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,12 +53,9 @@ class MainActivity : ComponentActivity() {
         prepLocationUpdates()
         createLocationView()
 
+        val vibrations = Vibrations(this)
 
 
-        val timings: LongArray = longArrayOf(50, 100, 50, 100, 50)
-        val amplitudes: IntArray = intArrayOf(0, 255, 0, 255, 0)
-        val repeat = 1 // Repeat from the second entry, index = 1.
-        val repeatingEffect :VibrationEffect = VibrationEffect.createWaveform(timings, amplitudes, repeat)
 
 
         var vibrating : Boolean= false;
@@ -80,9 +77,9 @@ class MainActivity : ComponentActivity() {
                         onClick = {
                             vibrating = !vibrating
                             if(vibrating){
-                                vibrator.vibrate(repeatingEffect)
+                                vibrations.increasingVibration()
                             }else {
-                                vibrator.cancel()
+                                vibrations.stopVibration()
                             }
                         }
                     ) {
