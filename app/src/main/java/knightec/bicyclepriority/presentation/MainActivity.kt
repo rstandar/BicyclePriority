@@ -11,7 +11,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -27,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.wear.compose.material.*
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.repository.SoundPlayer
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
@@ -39,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
+    private lateinit var vibrator : Vibrator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +56,17 @@ class MainActivity : ComponentActivity() {
         trafficLightView = TrafficLightView(trafficLightViewModel)
         prepLocationUpdates()
         createLocationView()
+
+
+
+        val timings: LongArray = longArrayOf(50, 100, 50, 100, 50)
+        val amplitudes: IntArray = intArrayOf(0, 255, 0, 255, 0)
+        val repeat = 1 // Repeat from the second entry, index = 1.
+        val repeatingEffect :VibrationEffect = VibrationEffect.createWaveform(timings, amplitudes, repeat)
+
+
+        var vibrating : Boolean= false;
+
         setContent {
             BicyclePriorityTheme {
                 val listState = rememberScalingLazyListState()
@@ -60,6 +78,23 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
+                    //item{ locationView.GPS() }
+                    //item{ trafficLightView.viewTrafficLight() }
+                    item{ Button(
+                        onClick = {
+                            vibrating = !vibrating
+                            if(vibrating){
+                                vibrator.vibrate(repeatingEffect)
+                            }else {
+                                vibrator.cancel()
+                            }
+                        }
+                    ) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = "Start/stop vibrating",
+                        )
+                    }}
                     item{ locationView.GPS() }
                     item{ trafficLightView.viewTrafficLight() }
                     item{
@@ -70,11 +105,11 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
             }
         }
 
     }
+
 
     private fun createLocationView() {
         if (locationIsEnabled()) {

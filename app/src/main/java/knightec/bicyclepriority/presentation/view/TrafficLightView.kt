@@ -1,7 +1,7 @@
 package knightec.bicyclepriority.presentation.view
 
-import android.os.Handler
-import android.os.Looper
+import android.content.Context
+import android.os.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
@@ -24,6 +25,7 @@ import org.json.JSONObject
 
 class TrafficLightView (viewModel: TrafficLightViewModel){
     private val trafficLightViewModel = viewModel
+    private var vibrating: Boolean = false;
 
     @Composable
     fun viewTrafficLight(){
@@ -70,6 +72,13 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
                 "Could not find traffic light"
             }
         return text
+    }
+
+    fun toggleVibration (){
+        vibrating = !vibrating
+        if(vibrating){
+
+        }
     }
 
 
