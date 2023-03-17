@@ -14,8 +14,8 @@ import com.google.android.gms.location.*
 class LocationData (var context : Context) : MutableLiveData<LocationDetails>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
-    /** Method that adds a listener when the class is activated and correct permissions are granted.
-     * The listener calls the setter for location data when a result is successfully obtained.*/
+    /*
+
     override fun onActive() {
         super.onActive()
         if (ActivityCompat.checkSelfPermission(
@@ -36,7 +36,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
                         setLocationData(location)
             }
         }
-    }
+    } */
 
     /** Method used to activate location polling, given that required permissions are granted.*/
     internal fun startLocationUpdates(){
@@ -52,6 +52,14 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
             return
         }
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+
+        fusedLocationClient.lastLocation.addOnSuccessListener {
+                location : Location?->
+            location.also {
+                    location ->
+                setLocationData(location)
+            }
+        }
     }
 
     /** Method used to set the resulting location data, when this is activated observers are informed. */
