@@ -74,12 +74,4 @@ class TrafficLightView (viewModel: TrafficLightViewModel){
         return text
     }
 
-    fun toggleVibration (){
-        vibrating = !vibrating
-        if(vibrating){
-
-        }
-    }
-
-
 }

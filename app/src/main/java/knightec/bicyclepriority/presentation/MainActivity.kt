@@ -1,9 +1,3 @@
-/* While this template provides a good starting point for using Wear Compose, you can always
- * take a look at https://github.com/android/wear-os-samples/tree/main/ComposeStarter and
- * https://github.com/android/wear-os-samples/tree/main/ComposeAdvanced to find the most up to date
- * changes to the libraries and their usages.
- */
-
 package knightec.bicyclepriority.presentation
 
 import android.Manifest
@@ -35,7 +29,7 @@ import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(){
 
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
@@ -98,7 +92,7 @@ class MainActivity : ComponentActivity() {
 
     private fun createLocationView() {
         if (locationIsEnabled()) {
-            val locationViewModel : LocationViewModel = LocationViewModel(this.application)
+            val locationViewModel = LocationViewModel(this.application)
             locationView = LocationView(locationViewModel)
         }
         else {
@@ -106,7 +100,7 @@ class MainActivity : ComponentActivity() {
                 this,
                 "Location must be enabled for application to work",
                 Toast.LENGTH_LONG
-            )
+            ).show()
             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(intent)
             createLocationView()

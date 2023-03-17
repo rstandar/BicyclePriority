@@ -13,7 +13,7 @@ class TrafficLightViewModel(application: Application) : AndroidViewModel(applica
     val url = "https://rb09v6m375.execute-api.eu-north-1.amazonaws.com/default/isak-test-function"
     //val url = "https://5zuo7ssvj9.execute-api.eu-north-1.amazonaws.com/default/THESIS-bicyclePriority-trafficLights"
 
-    private val trafficLight = TrafficLightHTTP(application.applicationContext)
+    private val trafficLight = TrafficLightHTTP(getApplication())
     var result : MutableLiveData<JSONObject> = MutableLiveData()
 
     private val pollHandler = Handler(Looper.getMainLooper())
