@@ -38,6 +38,7 @@ class LocationView(viewModel: LocationViewModel) {
             location?.let {
                 Text(text = location!!.latitude)
                 Text(text = location!!.longitude)
+                Text(text = location!!.speed)
             }
         }
         

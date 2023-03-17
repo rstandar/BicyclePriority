@@ -57,7 +57,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
     private fun setLocationData(location: Location?) {
         location?.let {
             location ->
-            value = LocationDetails(location.longitude.toString(), location.latitude.toString())
+            value = LocationDetails(location.longitude.toString(), location.latitude.toString(), location.speed.toString())
         }
     }
 
