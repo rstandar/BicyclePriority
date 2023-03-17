@@ -30,9 +30,10 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener {
-            location -> location.also {
-                location ->
-                setLocationData(location)
+            location : Location?->
+                location.also {
+                    location ->
+                        setLocationData(location)
             }
         }
     }
@@ -62,10 +63,12 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
     }
 
     /** When application become inactive this method cancels location updates. */
+    /*
     override fun onInactive() {
         super.onInactive()
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
+    */
 
     /** Setup of callback object used to construct location requests. This object is used to describe how to
      * handle results from locationUpdates. */
@@ -82,7 +85,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
     /** Companion object containing time interval for location updates: UPDATE_INTERVAL, by changing this const update frequency is updated.
      * Also contain a builder for setting up location requests. */
     companion object {
-        private const val UPDATE_INTERVAL : Long = 5000
+        private const val UPDATE_INTERVAL : Long = 1000
         val locationRequest : LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL).build()
     }
 }
