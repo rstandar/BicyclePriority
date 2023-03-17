@@ -65,8 +65,8 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
-                    //item{ locationView.GPS() }
-                    //item{ trafficLightView.viewTrafficLight() }
+                    item{ locationView.GPS() }
+                    item{ trafficLightView.viewTrafficLight() }
                     item{ Button(
                         onClick = {
                             vibrating = !vibrating
@@ -82,8 +82,6 @@ class MainActivity : ComponentActivity() {
                             text = "Start/stop vibrating",
                         )
                     }}
-                    item{ locationView.GPS() }
-                    item{ trafficLightView.viewTrafficLight() }
                     item{
                         Button(onClick = {
                             soundPlayer.testSound()

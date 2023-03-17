@@ -82,7 +82,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
     /** Companion object containing time interval for location updates: UPDATE_INTERVAL, by changing this const update frequency is updated.
      * Also contain a builder for setting up location requests. */
     companion object {
-        private const val UPDATE_INTERVAL : Long = 60000
+        private const val UPDATE_INTERVAL : Long = 5000
         val locationRequest : LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL).build()
     }
 }
