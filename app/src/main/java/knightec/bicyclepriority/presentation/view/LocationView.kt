@@ -40,8 +40,13 @@ class LocationView(viewModel: LocationViewModel) {
                 Text(text = location!!.latitude)
                 Text(text = location!!.longitude)
                 Text(text = location!!.speed)
-                Button(onClick = { locationViewModel.toggleGPS() }) {
+                /* Button(onClick = { locationViewModel.toggleGPS() }) {
                     Text(text = "Start/Stop")
+                } */
+                Button(onClick = {
+                    locationViewModel.startLocationService()
+                }) {
+
                 }
             }
         }

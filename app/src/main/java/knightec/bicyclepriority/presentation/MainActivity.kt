@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
+import knightec.bicyclepriority.presentation.repository.LocationService
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.Vibrations
@@ -41,8 +42,13 @@ class MainActivity : ComponentActivity(){
         val soundPlayer = SoundPlayer(this)
 
         trafficLightView = TrafficLightView(trafficLightViewModel)
-        prepLocationUpdates()
+        getLocationPermissions()
         createLocationView()
+
+        Intent(applicationContext, LocationService::class.java).apply {
+            action = LocationService.ACTION_START
+            startService(this)
+        }
 
         val vibrations = Vibrations(this)
 
@@ -59,7 +65,7 @@ class MainActivity : ComponentActivity(){
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
-                    item{ locationView.GPS() }
+                    //item{ locationView.GPS() }
                     /*item{ trafficLightView.viewTrafficLight() }
                     item{ Button(
                         onClick = {
@@ -104,13 +110,12 @@ class MainActivity : ComponentActivity(){
             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(intent)
             createLocationView()
-
         }
     }
 
 
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
-    private fun prepLocationUpdates() {
+    private fun getLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -119,6 +124,15 @@ class MainActivity : ComponentActivity(){
             return
         } else {
             requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        } else {
+            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
     }
 

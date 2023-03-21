@@ -56,6 +56,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
 
         fusedLocationClient.lastLocation.addOnSuccessListener {
                 location : Location?->
+            Toast.makeText(context,location?.toString(),Toast.LENGTH_LONG).show()
             location.also {
                     location ->
                 setLocationData(location)

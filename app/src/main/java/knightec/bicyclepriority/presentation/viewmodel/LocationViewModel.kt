@@ -1,6 +1,7 @@
 package knightec.bicyclepriority.presentation.viewmodel
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import knightec.bicyclepriority.presentation.repository.LocationData
 
@@ -19,6 +20,10 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         locationData.startLocationUpdates()
         GPSOn = true
     }
+
+    fun startLocationService() {
+    }
+
 
     fun toggleGPS() {
         if(GPSOn) locationData.stopLocationUpdates()
