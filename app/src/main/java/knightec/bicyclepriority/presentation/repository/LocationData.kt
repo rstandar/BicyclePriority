@@ -51,6 +51,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
             Toast.makeText(context,"Permission required for application to work",Toast.LENGTH_LONG).show()
             return
         }
+        Toast.makeText(context, "Location requesting updates.",Toast.LENGTH_LONG)
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
 
         fusedLocationClient.lastLocation.addOnSuccessListener {
@@ -64,6 +65,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
 
     internal fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        Toast.makeText(context, "Location updates stopped.",Toast.LENGTH_LONG)
     }
 
 
