@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 
-class DefaultLocationClient(private val context: Context, private val client: FusedLocationProviderClient) : LocationClient{
-
-    override fun getLocationUpdates(interval: Long): Flow<Location> {
+class DefaultLocationClient(private val context: Context, private val client: FusedLocationProviderClient){
+    private var currentLocation : LocationDetails = LocationDetails("0","0","0")
+    fun getLocationUpdates(interval: Long): Flow<Location> {
         return callbackFlow {
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -47,6 +47,7 @@ class DefaultLocationClient(private val context: Context, private val client: Fu
                 override fun onLocationResult(res: LocationResult) {
                     super.onLocationResult(res)
                     res.locations.lastOrNull()?.let { location ->
+                        currentLocation = LocationDetails(location.latitude.toString(),location.longitude.toString(),location.speed.toString())
                         launch { send(location)}
                     }
                 }
@@ -60,4 +61,5 @@ class DefaultLocationClient(private val context: Context, private val client: Fu
         }
 
     }
+
 }

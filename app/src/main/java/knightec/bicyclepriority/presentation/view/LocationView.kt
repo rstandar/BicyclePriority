@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
+import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
 
@@ -27,7 +28,7 @@ class LocationView(viewModel: LocationViewModel) {
 
     /** Component for displaying gps coordinates of the user.*/
     @Composable
-    fun GPS() {
+    fun GPS( locationDetails: LocationDetails) {
         val location by locationViewModel.getLocationData().observeAsState()
         Column(
             modifier = Modifier
@@ -36,7 +37,9 @@ class LocationView(viewModel: LocationViewModel) {
                 //verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            /*
             location?.let {
+
                 Text(text = location!!.latitude)
                 Text(text = location!!.longitude)
                 Text(text = location!!.speed)
@@ -49,6 +52,11 @@ class LocationView(viewModel: LocationViewModel) {
 
                 }
             }
+
+             */
+            Text(text = locationDetails.latitude)
+            Text(text = locationDetails.longitude)
+            Text(text = locationDetails.speed)
         }
         
     }

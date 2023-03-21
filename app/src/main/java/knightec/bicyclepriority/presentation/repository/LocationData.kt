@@ -52,14 +52,13 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
             return
         }
         Toast.makeText(context, "Location requesting updates.",Toast.LENGTH_LONG).show()
+
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
 
-        fusedLocationClient.lastLocation.addOnSuccessListener {
-                location : Location?->
+        fusedLocationClient.lastLocation.addOnSuccessListener { location : Location?->
             Toast.makeText(context,location?.toString(),Toast.LENGTH_LONG).show()
             location.also {
-                    location ->
-                setLocationData(location)
+               location -> setLocationData(location)
             }
         }
     }
@@ -102,7 +101,7 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
      * Also contain a builder for setting up location requests. */
     companion object {
         private const val UPDATE_INTERVAL : Long = 1000
-        val locationRequest : LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL).build()
+        val locationRequest : LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL).setMaxUpdates(Integer.MAX_VALUE).build()
     }
 }
 

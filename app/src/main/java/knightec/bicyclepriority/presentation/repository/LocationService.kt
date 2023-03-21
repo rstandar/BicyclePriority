@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.onEach
 class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private lateinit var locationClient : LocationClient
+    private lateinit var locationClient : DefaultLocationClient
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -48,7 +49,7 @@ class LocationService : Service() {
             val long = location.longitude.toString()
             val speed = location.speed.toString()
             val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)")
-
+            broadcastCurrentLocation(location)
             notificationManager.notify(1, updatedNotification.build())
         }
             .launchIn(serviceScope)
@@ -70,5 +71,14 @@ class LocationService : Service() {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+    }
+
+    private fun broadcastCurrentLocation (location : Location) {
+        val sendCurrentLocation = Intent()
+        sendCurrentLocation.action = "GET_CURRENT_LOCATION"
+        sendCurrentLocation.putExtra("CURRENT_LOCATION_LAT",location.latitude.toString())
+        sendCurrentLocation.putExtra("CURRENT_LOCATION_LONG",location.longitude.toString())
+        sendCurrentLocation.putExtra("CURRENT_LOCATION_SPEED",location.speed.toString())
+        sendBroadcast(sendCurrentLocation)
     }
 }
