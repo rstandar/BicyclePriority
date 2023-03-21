@@ -62,6 +62,11 @@ class LocationData (var context : Context) : MutableLiveData<LocationDetails>() 
         }
     }
 
+    internal fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+
     /** Method used to set the resulting location data, when this is activated observers are informed. */
     private fun setLocationData(location: Location?) {
         location?.let {

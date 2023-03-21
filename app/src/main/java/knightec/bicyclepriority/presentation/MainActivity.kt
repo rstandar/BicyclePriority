@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity(){
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
                     item{ locationView.GPS() }
-                    item{ trafficLightView.viewTrafficLight() }
+                    /*item{ trafficLightView.viewTrafficLight() }
                     item{ Button(
                         onClick = {
                             vibrating = !vibrating
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity(){
                         }) {
                             Text(text = "Play sound")
                         }
-                    }
+                    }*/
                 }
             }
         }

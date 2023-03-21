@@ -9,6 +9,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
@@ -39,6 +40,9 @@ class LocationView(viewModel: LocationViewModel) {
                 Text(text = location!!.latitude)
                 Text(text = location!!.longitude)
                 Text(text = location!!.speed)
+                Button(onClick = { locationViewModel.toggleGPS() }) {
+                    Text(text = "Start/Stop")
+                }
             }
         }
         

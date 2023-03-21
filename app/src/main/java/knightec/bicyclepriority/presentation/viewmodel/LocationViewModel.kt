@@ -8,6 +8,8 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
 
     private val locationData = LocationData(application)
 
+    private var GPSOn = false
+
     /** Used to get location data after location updates has been started */
     fun getLocationData() = locationData
 
@@ -15,6 +17,13 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
      * available by calling and observing result of method "getLocationData" */
     fun startLocationUpdates(){
         locationData.startLocationUpdates()
+        GPSOn = true
+    }
+
+    fun toggleGPS() {
+        if(GPSOn) locationData.stopLocationUpdates()
+        else locationData.startLocationUpdates()
+        GPSOn = !GPSOn
     }
 
 }
