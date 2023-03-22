@@ -100,6 +100,16 @@ class MainActivity : ComponentActivity(){
 
     }
 
+    override fun onPause() {
+        unregisterReceiver(locationReceiver)
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(locationReceiver, IntentFilter("GET_CURRENT_LOCATION"))
+    }
+
 
     private fun createLocationView() {
         if (locationIsEnabled()) {
