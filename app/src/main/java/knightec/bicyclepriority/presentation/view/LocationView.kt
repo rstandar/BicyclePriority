@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -28,8 +29,10 @@ class LocationView(viewModel: LocationViewModel) {
 
     /** Component for displaying gps coordinates of the user.*/
     @Composable
-    fun GPS( locationDetails: LocationDetails) {
+    fun GPS( locationDetails: MutableState<LocationDetails>) {
+        /* Not used with current implementation
         val location by locationViewModel.getLocationData().observeAsState()
+         */
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,9 +57,9 @@ class LocationView(viewModel: LocationViewModel) {
             }
 
              */
-            Text(text = locationDetails.latitude)
-            Text(text = locationDetails.longitude)
-            Text(text = locationDetails.speed)
+            Text(text = locationDetails.value.latitude)
+            Text(text = locationDetails.value.longitude)
+            Text(text = locationDetails.value.speed)
         }
         
     }

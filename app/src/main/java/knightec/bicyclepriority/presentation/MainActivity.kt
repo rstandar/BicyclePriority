@@ -16,6 +16,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
@@ -36,14 +39,14 @@ class MainActivity : ComponentActivity(){
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
     private lateinit var locationReceiver: LocationReceiver
-
+    private val locationDetails = mutableStateOf(LocationDetails("0","0","0"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
         val soundPlayer = SoundPlayer(this)
 
-        locationReceiver = LocationReceiver(LocationDetails("0","0","0"))
+        locationReceiver = LocationReceiver()
         registerReceiver(locationReceiver, IntentFilter("GET_CURRENT_LOCATION"))
 
         trafficLightView = TrafficLightView(trafficLightViewModel)
@@ -60,6 +63,7 @@ class MainActivity : ComponentActivity(){
         var vibrating : Boolean= false;
 
         setContent {
+
             BicyclePriorityTheme {
                 val listState = rememberScalingLazyListState()
                 ScalingLazyColumn(
@@ -70,7 +74,7 @@ class MainActivity : ComponentActivity(){
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
-                    item{ locationView.GPS(locationReceiver.getLocation()) }
+                    item{ locationView.GPS(locationDetails) }
                     /*item{ trafficLightView.viewTrafficLight() }
                     item{ Button(
                         onClick = {
@@ -177,20 +181,17 @@ class MainActivity : ComponentActivity(){
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    internal class LocationReceiver (var locationDetails: LocationDetails) : BroadcastReceiver() {
+    inner class LocationReceiver () : BroadcastReceiver() {
+        //var locationDetails: LocationDetails = LocationDetails("0","0","0")
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == "GET_CURRENT_LOCATION") {
                 val lat = intent.getStringExtra("CURRENT_LOCATION_LAT")
                 val long = intent.getStringExtra("CURRENT_LOCATION_LONG")
                 val speed = intent.getStringExtra("CURRENT_LOCATION_SPEED")
                 if(lat != null && long != null && speed != null) {
-                    locationDetails = LocationDetails(lat, long, speed)
+                    locationDetails.value = LocationDetails(lat, long, speed)
                 }
             }
-        }
-
-        fun getLocation() : LocationDetails {
-            return locationDetails
         }
     }
 
