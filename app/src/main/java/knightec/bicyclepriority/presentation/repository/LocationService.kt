@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import knightec.bicyclepriority.R
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
+import knightec.bicyclepriority.presentation.utilities.Vibrations
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,7 +44,9 @@ class LocationService : Service() {
     private fun start() {
         val notification = NotificationCompat.Builder(this, "location").setContentTitle("Tracking...").setContentText("Location = null").setSmallIcon(R.mipmap.ic_launcher).setOngoing(true)
         val soundPlayer = SoundPlayer(applicationContext)
+        val vibrations = Vibrations(applicationContext)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
 
         locationClient.getLocationUpdates(1000L).catch { e -> e.printStackTrace() }.onEach {  location ->
             val lat = location.latitude.toString()
@@ -52,6 +55,7 @@ class LocationService : Service() {
             val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)")
             broadcastCurrentLocation(location)
             soundPlayer.beepSound()
+            vibrations.simpleVibration()
             notificationManager.notify(1, updatedNotification.build())
         }
             .launchIn(serviceScope)

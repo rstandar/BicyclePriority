@@ -30,6 +30,14 @@ class Vibrations (private val context: Context) {
         vibrator.vibrate(repeatingEffect)
     }
 
+    fun simpleVibration() {
+        var timings: LongArray = longArrayOf(50, 200)
+        var amplitudes: IntArray = intArrayOf(0, 255)
+        var repeat = -1 // Repeat from the second entry, index = 1.
+        val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
+        vibrator.vibrate(simpleEffect)
+    }
+
     fun stopVibration () {
         vibrator.cancel()
     }
