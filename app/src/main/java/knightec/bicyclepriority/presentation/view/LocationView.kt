@@ -17,15 +17,17 @@ import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
 
-class LocationView(viewModel: LocationViewModel) {
+/*Earlier param: viewModel: LocationViewModel
+* */
+class LocationView() {
 
     /* Get the view model for locations and call method for checking/receiving permissions from user */
-    private val locationViewModel: LocationViewModel = viewModel
-
+    //private val locationViewModel: LocationViewModel = viewModel
+/*
     init {
         locationViewModel.startLocationUpdates()
     }
-
+*/
 
     /** Component for displaying gps coordinates of the user.*/
     @Composable

@@ -6,7 +6,7 @@ import knightec.bicyclepriority.R
 
 class SoundPlayer(private val context: Context) {
 
-    val beepPlayer = MediaPlayer.create(context, R.raw.Beep)
+    private val beepPlayer = MediaPlayer.create(context, R.raw.beep)
 
     fun beepSound() {
         beepPlayer.start()

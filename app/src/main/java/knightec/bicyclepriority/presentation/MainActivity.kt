@@ -40,18 +40,19 @@ class MainActivity : ComponentActivity(){
     private lateinit var trafficLightView : TrafficLightView
     private lateinit var locationReceiver: LocationReceiver
     private val locationDetails = mutableStateOf(LocationDetails("0","0","0"))
-
+    private lateinit var soundPlayer: SoundPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
-        val soundPlayer = SoundPlayer(this)
+        soundPlayer = SoundPlayer(this)
 
         locationReceiver = LocationReceiver()
         registerReceiver(locationReceiver, IntentFilter("GET_CURRENT_LOCATION"))
 
         trafficLightView = TrafficLightView(trafficLightViewModel)
         getLocationPermissions()
-        createLocationView()
+        locationView = LocationView()
+        //createLocationView()
 
         Intent(applicationContext, LocationService::class.java).apply {
             action = LocationService.ACTION_START
@@ -118,7 +119,7 @@ class MainActivity : ComponentActivity(){
     private fun createLocationView() {
         if (locationIsEnabled()) {
             val locationViewModel = LocationViewModel(this.application)
-            locationView = LocationView(locationViewModel)
+            //locationView = LocationView(locationViewModel)
         }
         else {
             Toast.makeText(
@@ -192,7 +193,9 @@ class MainActivity : ComponentActivity(){
                     locationDetails.value = LocationDetails(lat, long, speed)
                 }
             }
+            //soundPlayer.beepSound()
         }
+
     }
 
 }
