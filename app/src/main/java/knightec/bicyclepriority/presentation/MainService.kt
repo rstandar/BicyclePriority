@@ -1,4 +1,4 @@
-package knightec.bicyclepriority.presentation.repository
+package knightec.bicyclepriority.presentation
 
 import android.app.NotificationManager
 import android.app.Service
@@ -9,6 +9,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import knightec.bicyclepriority.R
+import knightec.bicyclepriority.presentation.repository.LocationClient
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.utilities.Vibrations
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class LocationService : Service() {
+class MainService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient : LocationClient
