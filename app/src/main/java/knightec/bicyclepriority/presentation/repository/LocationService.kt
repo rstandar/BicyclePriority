@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.onEach
 class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private lateinit var locationClient : DefaultLocationClient
+    private lateinit var locationClient : LocationClient
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -30,7 +30,7 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        locationClient = DefaultLocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
+        locationClient = LocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -47,7 +47,6 @@ class LocationService : Service() {
         val vibrations = Vibrations(applicationContext)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-
         locationClient.getLocationUpdates(1000L).catch { e -> e.printStackTrace() }.onEach {  location ->
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
@@ -61,7 +60,6 @@ class LocationService : Service() {
             .launchIn(serviceScope)
 
         startForeground(1, notification.build())
-
     }
 
     private fun stop() {

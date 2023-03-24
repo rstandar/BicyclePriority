@@ -7,11 +7,12 @@ import android.location.Location
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 
-class LocationData (var context : Context) : MutableLiveData<LocationDetails>() {
+
+/**Deprecated class, replaced with LocationClient and LocationService */
+class LocationData_DEPRECATED (var context : Context) : MutableLiveData<LocationDetails>() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     /*

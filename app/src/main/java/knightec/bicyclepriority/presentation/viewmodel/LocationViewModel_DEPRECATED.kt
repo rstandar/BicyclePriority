@@ -1,13 +1,14 @@
 package knightec.bicyclepriority.presentation.viewmodel
 
 import android.app.Application
-import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
-import knightec.bicyclepriority.presentation.repository.LocationData
+import knightec.bicyclepriority.presentation.repository.LocationData_DEPRECATED
 
-class LocationViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val locationData = LocationData(application)
+/**Deprecated class, replaced with LocationService and LocationClient */
+class LocationViewModel_DEPRECATED(application: Application) : AndroidViewModel(application) {
+
+    private val locationData = LocationData_DEPRECATED(application)
 
     private var GPSOn = false
 
@@ -22,6 +23,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun startLocationService() {
+
     }
 
 

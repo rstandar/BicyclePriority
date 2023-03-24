@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,9 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
@@ -27,10 +23,8 @@ import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.repository.LocationService
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
-import knightec.bicyclepriority.presentation.utilities.Vibrations
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
-import knightec.bicyclepriority.presentation.viewmodel.LocationViewModel
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
 
@@ -41,6 +35,7 @@ class MainActivity : ComponentActivity(){
     private lateinit var locationReceiver: LocationReceiver
     private val locationDetails = mutableStateOf(LocationDetails("0","0","0"))
     private lateinit var soundPlayer: SoundPlayer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val trafficLightViewModel = TrafficLightViewModel(this.application)
@@ -52,16 +47,16 @@ class MainActivity : ComponentActivity(){
         trafficLightView = TrafficLightView(trafficLightViewModel)
         getLocationPermissions()
         locationView = LocationView()
-        //createLocationView()
 
         Intent(applicationContext, LocationService::class.java).apply {
             action = LocationService.ACTION_START
             startService(this)
         }
 
+        /*
         val vibrations = Vibrations(this)
-
         var vibrating : Boolean= false;
+        */
 
         setContent {
 
@@ -116,54 +111,17 @@ class MainActivity : ComponentActivity(){
     }
 
 
-    private fun createLocationView() {
-        if (locationIsEnabled()) {
-            val locationViewModel = LocationViewModel(this.application)
-            //locationView = LocationView(locationViewModel)
-        }
-        else {
-            Toast.makeText(
-                this,
-                "Location must be enabled for application to work",
-                Toast.LENGTH_LONG
-            ).show()
-            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivity(intent)
-            createLocationView()
-        }
-    }
-
-
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
     private fun getLocationPermissions() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+        if (
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
         ) {
             return
         } else {
-            ///requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             requestMultiplePermissions.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.ACCESS_COARSE_LOCATION))
         }
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        } else {
-            requestSinglePermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
     }
-
-    /** In-line function for requesting permission for locations from user.*/
-    private val requestSinglePermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (!isGranted) {
-                Toast.makeText(this, "GPS unavailable", Toast.LENGTH_SHORT)
-            }
-        }
 
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -174,16 +132,8 @@ class MainActivity : ComponentActivity(){
                 } else Toast.makeText(this,"Permissions granted.",Toast.LENGTH_SHORT).show()
         }
 
-    /** Method for checking if location services are enabled on device. Return boolean value depending on result.*/
-    private fun locationIsEnabled(): Boolean {
-        val locationManager: LocationManager =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
 
     inner class LocationReceiver () : BroadcastReceiver() {
-        //var locationDetails: LocationDetails = LocationDetails("0","0","0")
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == "GET_CURRENT_LOCATION") {
                 val lat = intent.getStringExtra("CURRENT_LOCATION_LAT")
@@ -193,11 +143,8 @@ class MainActivity : ComponentActivity(){
                     locationDetails.value = LocationDetails(lat, long, speed)
                 }
             }
-            //soundPlayer.beepSound()
         }
-
     }
-
 }
 
 
