@@ -86,4 +86,48 @@ class MainService : Service() {
         sendCurrentLocation.putExtra("CURRENT_LOCATION_SPEED",location.speed.toString())
         sendBroadcast(sendCurrentLocation)
     }
+
+    private fun decideAction (time: Double, distance: Double, status: Boolean) {
+        if(distance>5f && distance < 250f){
+            if(status){
+                //Green light
+                if(time > -5f && time < 5f){
+                    increaseSpeed()
+                } else if(time <= -5f && time > -15f){
+                    increaseSpeedALot()
+                } else if(time <= -15f && time > -30f){
+                    decreaseSpeed()
+                } else if(time <= -30f){
+                    decreaseSpeedALot()
+                }
+            } else{
+                //Red light
+                if(time >= 20f && time < 40f){
+                    decreaseSpeedALot()
+                } else if(time >= -1f && time > 20f){
+                    decreaseSpeed()
+                } else if(time >= -10f && time > -3f){
+                    increaseSpeed()
+                } else if(time >= -20f && time > -10f){
+                    increaseSpeedALot()
+                }
+            }
+        }
+    }
+
+    private fun increaseSpeed(){
+        //TODO: Give user indications to increase speed
+    }
+
+    private fun increaseSpeedALot(){
+        //TODO: Give user indications to increase speed a lot
+    }
+
+    private fun decreaseSpeed(){
+        //TODO: Give user indications to decrease speed
+    }
+
+    private fun decreaseSpeedALot(){
+        //TODO: Give user indications to decrease speed a lot
+    }
 }
