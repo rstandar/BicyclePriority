@@ -22,12 +22,14 @@ import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
+import knightec.bicyclepriority.presentation.utilities.Vibrations
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
 
 class MainActivity : ComponentActivity(){
+
 
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val trafficLightViewModel = TrafficLightViewModel(this.application)
         soundPlayer = SoundPlayer(this)
 
@@ -52,9 +55,9 @@ class MainActivity : ComponentActivity(){
             startService(this)
         }
 
-        /*
+
         val vibrations = Vibrations(this)
-        var vibrating : Boolean= false;
+        /*var vibrating : Boolean= false;
         */
 
         setContent {
@@ -69,7 +72,9 @@ class MainActivity : ComponentActivity(){
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
-                    item{ locationView.GPS(locationDetails) }
+                    //item{ locationView.GPS(locationDetails) }
+
+                    item { vibrations.VibrationTest()}
                     /*item{ trafficLightView.viewTrafficLight() }
                     item{ Button(
                         onClick = {
