@@ -74,10 +74,18 @@ class Vibrations (private val context: Context) {
         val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
         vibrator.vibrate(simpleEffect)
     }
-
+ /*
     fun vibration5(){
-        var timings: LongArray = longArrayOf(sb,s,s,s,s,s,s,s,s,s,s,s,s,s,sb)
-        var amplitudes: IntArray = intArrayOf(0,h/6,2*h/6,3*h/6,4*h/6,5*h/6,h,h,h,5*h/6,4*h/6,3*h/6,2*h/6,h/6,0)
+        var timings: LongArray = longArrayOf(s,b-250,s,b-250,s,b-250,l,b-250,l,b-250,l,b-200,l,b-150,l,b-100,l,b,l)
+        var amplitudes: IntArray = intArrayOf(h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h)
+        var repeat = -1 // Play once
+        val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
+        vibrator.vibrate(simpleEffect)
+    }
+*/
+    fun vibration5(){
+        var timings: LongArray = longArrayOf(s,b-250,s,b-250,s,b-200,s,b-150,s,b-100,s,b-50,s,b,l,b,l,b,l)
+        var amplitudes: IntArray = intArrayOf(h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h)
         var repeat = -1 // Play once
         val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
         vibrator.vibrate(simpleEffect)
@@ -85,8 +93,8 @@ class Vibrations (private val context: Context) {
 
 
     fun vibration6(){
-        var timings: LongArray = longArrayOf(l, b, l, b-50, l, b-100, l, b-150, l, b-200, l, b-250, l)
-        var amplitudes: IntArray = intArrayOf(h,0,h,0,h,0,h,0,h,0,h,0,h)
+        var timings: LongArray = longArrayOf(l, b, l, b-100, l, b-150, l, b-200, l, b-250, l, b-250, l,b-250,s,b-250,s,b-250,s)
+        var amplitudes: IntArray = intArrayOf(h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h)
         var repeat = -1 // Play once
         val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
         vibrator.vibrate(simpleEffect)

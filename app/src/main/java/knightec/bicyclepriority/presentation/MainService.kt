@@ -54,8 +54,8 @@ class MainService : Service() {
             val speed = location.speed.toString()
             val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)")
             broadcastCurrentLocation(location)
-            soundPlayer.beepSound()
-            vibrations.simpleVibration()
+            //soundPlayer.beepSound()
+            //vibrations.simpleVibration()
             notificationManager.notify(1, updatedNotification.build())
         }
             .launchIn(serviceScope)
