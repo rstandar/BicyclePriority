@@ -6,10 +6,17 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.MutableLiveData
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.LocationServices
 import knightec.bicyclepriority.R
 import knightec.bicyclepriority.presentation.repository.LocationClient
+import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.utilities.Vibrations
 import kotlinx.coroutines.CoroutineScope
@@ -19,11 +26,15 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.json.JSONObject
 
 class MainService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient : LocationClient
+    private lateinit var queue : RequestQueue
+    private lateinit var vibrations : Vibrations
+    private lateinit var soundPlayer: SoundPlayer
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -32,6 +43,9 @@ class MainService : Service() {
     override fun onCreate() {
         super.onCreate()
         locationClient = LocationClient(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
+        queue = Volley.newRequestQueue(applicationContext)
+        vibrations = Vibrations(applicationContext)
+        soundPlayer = SoundPlayer(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -44,8 +58,6 @@ class MainService : Service() {
 
     private fun start() {
         val notification = NotificationCompat.Builder(this, "location").setContentTitle("Tracking...").setContentText("Location = null").setSmallIcon(R.mipmap.ic_launcher).setOngoing(true)
-        val soundPlayer = SoundPlayer(applicationContext)
-        val vibrations = Vibrations(applicationContext)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient.getLocationUpdates(1000L).catch { e -> e.printStackTrace() }.onEach {  location ->
@@ -54,8 +66,7 @@ class MainService : Service() {
             val speed = location.speed.toString()
             val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)")
             broadcastCurrentLocation(location)
-            soundPlayer.beepSound()
-            vibrations.simpleVibration()
+            getTrafficLightInformation(location)
             notificationManager.notify(1, updatedNotification.build())
         }
             .launchIn(serviceScope)
@@ -87,9 +98,10 @@ class MainService : Service() {
         sendBroadcast(sendCurrentLocation)
     }
 
-    private fun decideAction (time: Double, distance: Double, status: Boolean) {
+    private fun decideAction (time: Double, distance: Double, status: String) {
+        //TODO: add a timer to check if a action has been communicated to user recently
         if(distance>5f && distance < 250f){
-            if(status){
+            if(status=="green"){
                 //Green light
                 if(time > -5f && time < 5f){
                     increaseSpeed()
@@ -104,11 +116,11 @@ class MainService : Service() {
                 //Red light
                 if(time >= 20f && time < 40f){
                     decreaseSpeedALot()
-                } else if(time >= -1f && time > 20f){
+                } else if(time >= -1f && time < 20f){
                     decreaseSpeed()
-                } else if(time >= -10f && time > -3f){
+                } else if(time >= -10f && time < -3f){
                     increaseSpeed()
-                } else if(time >= -20f && time > -10f){
+                } else if(time >= -20f && time < -10f){
                     increaseSpeedALot()
                 }
             }
@@ -129,5 +141,31 @@ class MainService : Service() {
 
     private fun decreaseSpeedALot(){
         //TODO: Give user indications to decrease speed a lot
+    }
+
+    private fun getTrafficLightInformation(location: Location){
+        val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
+
+        val reqBody = JSONObject()
+        reqBody.put("lat",location.latitude.toString())
+        reqBody.put("lon",location.longitude.toString())
+
+
+        val req = JsonObjectRequest(
+            Request.Method.POST,url,reqBody,
+            {
+                response ->
+                run {
+                    val time_left = response["time_left"].toString()
+                    val distance = response["distance"].toString()
+                    val status = response["status"] as String
+                    decideAction(time_left.toDouble(), distance.toDouble(), status)
+                }
+            },
+            {
+                    error -> print("ERROR: $error")
+            }
+        )
+        queue.add(req)
     }
 }
