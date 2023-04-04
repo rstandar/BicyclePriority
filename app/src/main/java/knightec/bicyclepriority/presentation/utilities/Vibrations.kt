@@ -23,8 +23,8 @@ class Vibrations (private val context: Context) {
     }
 
     fun increasingVibration() {
-        var timings: LongArray = longArrayOf(50, 50, 50, 50, 50, 50, 50)
-        var amplitudes: IntArray = intArrayOf(0, 40, 80, 120, 160, 200, 240)
+        var timings: LongArray = longArrayOf(50, 50, 50, 50, 50, 50, 50, 50)
+        var amplitudes: IntArray = intArrayOf(0, 40, 80, 120, 160, 200, 240, 255)
         var repeat = 1 // Repeat from the second entry, index = 1.
         val repeatingEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
         vibrator.vibrate(repeatingEffect)

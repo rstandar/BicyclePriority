@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.repository.LocationDetails
-import knightec.bicyclepriority.presentation.repository.LocationService
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.view.LocationView
@@ -48,8 +47,8 @@ class MainActivity : ComponentActivity(){
         getLocationPermissions()
         locationView = LocationView()
 
-        Intent(applicationContext, LocationService::class.java).apply {
-            action = LocationService.ACTION_START
+        Intent(applicationContext, MainService::class.java).apply {
+            action = MainService.ACTION_START
             startService(this)
         }
 

@@ -4,9 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 
-class LocationApp : Application() {
+class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
