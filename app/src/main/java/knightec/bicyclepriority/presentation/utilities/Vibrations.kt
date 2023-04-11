@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-
 class Vibrations (private val context: Context) {
     private var vibrator : Vibrator
 
@@ -41,4 +40,5 @@ class Vibrations (private val context: Context) {
     fun stopVibration () {
         vibrator.cancel()
     }
+
 }
