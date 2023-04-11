@@ -72,9 +72,8 @@ class MainActivity : ComponentActivity(){
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment= Alignment.CenterHorizontally
                 ) {
-                    //item{ locationView.GPS(locationDetails) }
+                    item{ locationView.GPS(locationDetails) }
 
-                    item { vibrations.VibrationTest()}
                     /*item{ trafficLightView.viewTrafficLight() }
                     item{ Button(
                         onClick = {
