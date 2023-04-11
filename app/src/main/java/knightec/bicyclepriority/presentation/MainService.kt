@@ -36,6 +36,7 @@ class MainService : Service() {
     private lateinit var queue : RequestQueue
     private lateinit var vibrations : Vibrations
     private lateinit var soundPlayer: SoundPlayer
+    private var prevLocation = LocationDetails("0","0","0")
     enum class States {ACCELERATING, DECELERATING, NEUTRAL }
     private var state : States = States.NEUTRAL
     override fun onBind(p0: Intent?): IBinder? {
@@ -66,10 +67,12 @@ class MainService : Service() {
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
             val speed = location.speed.toString()
-            val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)")
+            val curLocation = LocationDetails(lat,long,speed)
+            val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)") //Used for foreground service
             broadcastCurrentLocation(location)
-            getTrafficLightInformation(location)
+            getTrafficLightInformation(curLocation, prevLocation)
             notificationManager.notify(1, updatedNotification.build())
+            prevLocation = LocationDetails(lat,long,speed)
         }
             .launchIn(serviceScope)
 
@@ -159,12 +162,14 @@ class MainService : Service() {
     }
 
 
-    private fun getTrafficLightInformation(location: Location){
+    private fun getTrafficLightInformation(curLocation: LocationDetails, prevLocation : LocationDetails){
         val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
 
         val reqBody = JSONObject()
-        reqBody.put("lat",location.latitude.toString())
-        reqBody.put("lon",location.longitude.toString())
+        reqBody.put("lat",curLocation.latitude)
+        reqBody.put("lon",curLocation.longitude)
+        reqBody.put("prev_lat",prevLocation.latitude)
+        reqBody.put("prev_lon",prevLocation.longitude)
 
 
         val req = JsonObjectRequest(
@@ -172,11 +177,11 @@ class MainService : Service() {
             {
                 response ->
                 run {
-                    val time_left = response["time_left"].toString()
+                    val timeLeft = response["time_left"].toString()
                     val distance = response["distance"].toString()
                     val status = response["status"] as String
-                    val speed = if(location.speed == 0.0f) 0.001f else location.speed
-                    decideAction(time_left.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status)
+                    val speed = if(curLocation.speed.toFloat() == 0.0f) 0.001f else curLocation.speed.toFloat() //Used to avoid div by zero error
+                    decideAction(timeLeft.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status)
                 }
             },
             {
