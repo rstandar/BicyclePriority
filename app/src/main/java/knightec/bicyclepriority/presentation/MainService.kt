@@ -145,7 +145,7 @@ class MainService : Service() {
         if(state != States.ACCELERATING){
             state = States.ACCELERATING
             //TODO Play sound once
-            //TODO Start repeating vibration pattern for increasing speed
+            vibrations.increaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
     }
 
@@ -154,7 +154,7 @@ class MainService : Service() {
         if(state != States.DECELERATING){
             state = States.DECELERATING
             //TODO Play sound once
-            //TODO Start repeating vibration pattern for decreasing speed
+            vibrations.decreaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
     }
 
