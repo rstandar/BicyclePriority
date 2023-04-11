@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
-import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
@@ -103,9 +100,18 @@ class MainService : Service() {
         sendBroadcast(sendCurrentLocation)
     }
 
-    private fun decideAction (time: Double, distance: Double, status: String) {
-        //TODO: add a timer to check if a action has been communicated to user recently
-        if(distance>5f && distance < 250f){
+    private fun decideAction (time: Double, distance: Double, status: String, speed: Float) {
+        val distanceLimit = if(speed>8.5){ //In m/s, represent ~30km/h
+            150f
+        } else if(speed > 6f) { //In m/s, represent ~22km/h which is average biking speed
+            100f
+        } else if(speed > 3.5){ //In m/s, represent ~13km/h
+            50f
+        } else { // Slower than 13km/h
+            30f
+        }
+
+        if(distance>5f && distance < distanceLimit){
             if(status=="green"){ //Green light
                 if(time >= -15f && time<=2f){ //if cyclist will arrive at traffic light 15s after red light to 2 seconds before red light, increase speed to make sure they make it.
                     increaseSpeed()
@@ -181,7 +187,7 @@ class MainService : Service() {
                     val distance = response["distance"].toString()
                     val status = response["status"] as String
                     val speed = if(curLocation.speed.toFloat() == 0.0f) 0.001f else curLocation.speed.toFloat() //Used to avoid div by zero error
-                    decideAction(timeLeft.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status)
+                    decideAction(timeLeft.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status, curLocation.speed.toFloat())
                 }
             },
             {
