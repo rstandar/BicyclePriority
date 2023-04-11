@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
@@ -35,7 +36,8 @@ class MainService : Service() {
     private lateinit var queue : RequestQueue
     private lateinit var vibrations : Vibrations
     private lateinit var soundPlayer: SoundPlayer
-
+    enum class States {ACCELERATING, DECELERATING, NEUTRAL }
+    private var state : States = States.NEUTRAL
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -101,47 +103,61 @@ class MainService : Service() {
     private fun decideAction (time: Double, distance: Double, status: String) {
         //TODO: add a timer to check if a action has been communicated to user recently
         if(distance>5f && distance < 250f){
-            if(status=="green"){
-                //Green light
-                if(time > -5f && time < 5f){
+            if(status=="green"){ //Green light
+                if(time >= -15f && time<=2f){ //if cyclist will arrive at traffic light 15s after red light to 2 seconds before red light, increase speed to make sure they make it.
                     increaseSpeed()
-                } else if(time <= -5f && time > -15f){
-                    increaseSpeedALot()
-                } else if(time <= -15f && time > -30f){
-                    decreaseSpeed()
-                } else if(time <= -30f){
-                    decreaseSpeedALot()
                 }
-            } else{
-                //Red light
-                if(time >= 20f && time < 40f){
-                    decreaseSpeedALot()
-                } else if(time >= -1f && time < 20f){
+                else if(time <-15f){
                     decreaseSpeed()
-                } else if(time >= -10f && time < -3f){
+                }
+                else{
+                    if(state != States.NEUTRAL) {
+                        vibrations.stopVibration()
+                        state = States.NEUTRAL
+                    }
+                }
+            }
+            else{ //Red light
+                if(time <= -3f && time >= -15f){
+                    if(state != States.NEUTRAL) {
+                        vibrations.stopVibration()
+                        state = States.NEUTRAL
+                    }
+                }
+                else if(time > -3f){
+                    decreaseSpeed()
+                }
+                else{ //Cyclist will arrive too late to the traffic light.
                     increaseSpeed()
-                } else if(time >= -20f && time < -10f){
-                    increaseSpeedALot()
                 }
+            }
+        }
+        else{
+            if(state != States.NEUTRAL) {
+                vibrations.stopVibration()
+                state = States.NEUTRAL
             }
         }
     }
 
     private fun increaseSpeed(){
         //TODO: Give user indications to increase speed
-    }
-
-    private fun increaseSpeedALot(){
-        //TODO: Give user indications to increase speed a lot
+        if(state != States.ACCELERATING){
+            state = States.ACCELERATING
+            //TODO Play sound once
+            vibrations.increaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
+        }
     }
 
     private fun decreaseSpeed(){
         //TODO: Give user indications to decrease speed
+        if(state != States.DECELERATING){
+            state = States.DECELERATING
+            //TODO Play sound once
+            vibrations.decreaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
+        }
     }
 
-    private fun decreaseSpeedALot(){
-        //TODO: Give user indications to decrease speed a lot
-    }
 
     private fun getTrafficLightInformation(location: Location){
         val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
@@ -159,7 +175,8 @@ class MainService : Service() {
                     val time_left = response["time_left"].toString()
                     val distance = response["distance"].toString()
                     val status = response["status"] as String
-                    decideAction(time_left.toDouble(), distance.toDouble(), status)
+                    val speed = if(location.speed == 0.0f) 0.001f else location.speed
+                    decideAction(time_left.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status)
                 }
             },
             {
