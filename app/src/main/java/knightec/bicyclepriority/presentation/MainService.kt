@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
-import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
@@ -36,6 +33,7 @@ class MainService : Service() {
     private lateinit var queue : RequestQueue
     private lateinit var vibrations : Vibrations
     private lateinit var soundPlayer: SoundPlayer
+    private var prevLocation = LocationDetails("0","0","0")
     enum class States {ACCELERATING, DECELERATING, NEUTRAL }
     private var state : States = States.NEUTRAL
     override fun onBind(p0: Intent?): IBinder? {
@@ -66,10 +64,12 @@ class MainService : Service() {
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
             val speed = location.speed.toString()
-            val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)")
+            val curLocation = LocationDetails(lat,long,speed)
+            val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)") //Used for foreground service
             broadcastCurrentLocation(location)
-            getTrafficLightInformation(location)
+            getTrafficLightInformation(curLocation, prevLocation)
             notificationManager.notify(1, updatedNotification.build())
+            prevLocation = LocationDetails(lat,long,speed)
         }
             .launchIn(serviceScope)
 
@@ -100,9 +100,18 @@ class MainService : Service() {
         sendBroadcast(sendCurrentLocation)
     }
 
-    private fun decideAction (time: Double, distance: Double, status: String) {
-        //TODO: add a timer to check if a action has been communicated to user recently
-        if(distance>5f && distance < 250f){
+    private fun decideAction (time: Double, distance: Double, status: String, speed: Float) {
+        val distanceLimit = if(speed>8.5){ //In m/s, represent ~30km/h
+            150f
+        } else if(speed > 6f) { //In m/s, represent ~22km/h which is average biking speed
+            100f
+        } else if(speed > 3.5){ //In m/s, represent ~13km/h
+            50f
+        } else { // Slower than 13km/h
+            30f
+        }
+
+        if(distance>5f && distance < distanceLimit){
             if(status=="green"){ //Green light
                 if(time >= -15f && time<=2f){ //if cyclist will arrive at traffic light 15s after red light to 2 seconds before red light, increase speed to make sure they make it.
                     increaseSpeed()
@@ -159,12 +168,14 @@ class MainService : Service() {
     }
 
 
-    private fun getTrafficLightInformation(location: Location){
+    private fun getTrafficLightInformation(curLocation: LocationDetails, prevLocation : LocationDetails){
         val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
 
         val reqBody = JSONObject()
-        reqBody.put("lat",location.latitude.toString())
-        reqBody.put("lon",location.longitude.toString())
+        reqBody.put("lat",curLocation.latitude)
+        reqBody.put("lon",curLocation.longitude)
+        reqBody.put("prev_lat",prevLocation.latitude)
+        reqBody.put("prev_lon",prevLocation.longitude)
 
 
         val req = JsonObjectRequest(
@@ -172,11 +183,11 @@ class MainService : Service() {
             {
                 response ->
                 run {
-                    val time_left = response["time_left"].toString()
+                    val timeLeft = response["time_left"].toString()
                     val distance = response["distance"].toString()
                     val status = response["status"] as String
-                    val speed = if(location.speed == 0.0f) 0.001f else location.speed
-                    decideAction(time_left.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status)
+                    val speed = if(curLocation.speed.toFloat() == 0.0f) 0.001f else curLocation.speed.toFloat() //Used to avoid div by zero error
+                    decideAction(timeLeft.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status, curLocation.speed.toFloat())
                 }
             },
             {
