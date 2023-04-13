@@ -11,18 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.*
+import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.wearColorPalette
 
 class TrackingScreenView {
     @Composable
-    fun TrackingScreen(stopTracking: () -> Unit) {
+    fun TrackingScreen(stopTracking: () -> Unit, location : LocationDetails, status : String, distance : String ) {
         ScalingLazyColumn(
             modifier = Modifier
                 .background(MaterialTheme.colors.background),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment= Alignment.CenterHorizontally
         ) {
-            item { TrackingInformation(speed = "speed", status = "status", distance ="distance" ) }
+            item { TrackingInformation(speed = location.speed, status = status, distance = distance ) }
             item {StopButton(stopTracking)}
         }
     }
