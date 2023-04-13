@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.theme.wearColorPalette
 
@@ -23,12 +25,12 @@ class TrackingScreenView {
             horizontalAlignment= Alignment.CenterHorizontally
         ) {
             item { TrackingInformation(speed = "speed", status = "status", distance ="distance" ) }
-            item {StopButton(stopTracking)}
+            //item {StopButton(stopTracking)} //TODO: Remove
         }
     }
 
     @Composable
-    fun StopButton (stopTracking: () -> Unit) {
+    private fun StopButton (stopTracking: () -> Unit) {
         OutlinedButton(
             modifier = Modifier
                 .padding(20.dp, 1.dp)
@@ -47,20 +49,32 @@ class TrackingScreenView {
     }
 
     @Composable
-    fun TrackingInformation (speed: String, status: String, distance: String) {
-        Column() {
+    private fun TrackingInformation (speed: String, status: String, distance: String) {
+
+        Card(
+            onClick = {  },
+            backgroundPainter = CardDefaults.imageWithScrimBackgroundPainter(
+                backgroundImagePainter = ColorPainter(wearColorPalette.primary)
+            ),
+            contentColor = wearColorPalette.primary,
+            modifier = Modifier.width(130.dp)
+        ) {
             Text(
                 color = wearColorPalette.onPrimary,
-                text = speed
+                text = speed,
+                fontSize = 10.sp
             )
             Text(
                 color = wearColorPalette.onPrimary,
-                text = status
+                text = status,
+                fontSize = 10.sp
             )
             Text(
                 color = wearColorPalette.onPrimary,
-                text = distance
+                text = distance,
+                fontSize = 10.sp
             )
         }
     }
 }
+
