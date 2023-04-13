@@ -194,6 +194,6 @@ class MainService : Service() {
                     error -> print("ERROR: $error")
             }
         )
-        queue.add(req)
+        //queue.add(req)
     }
 }

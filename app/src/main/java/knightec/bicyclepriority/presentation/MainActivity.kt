@@ -11,26 +11,21 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
-import knightec.bicyclepriority.presentation.utilities.Vibrations
+import knightec.bicyclepriority.presentation.view.TrackingScreenView
+import knightec.bicyclepriority.presentation.view.HomeScreenView
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
 
 class MainActivity : ComponentActivity(){
-
-
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
     private lateinit var locationReceiver: LocationReceiver
@@ -41,6 +36,8 @@ class MainActivity : ComponentActivity(){
         super.onCreate(savedInstanceState)
 
         val trafficLightViewModel = TrafficLightViewModel(this.application)
+        val homeScreenView = HomeScreenView()
+        val trackingScreenView = TrackingScreenView()
         soundPlayer = SoundPlayer(this)
 
         locationReceiver = LocationReceiver()
@@ -56,52 +53,48 @@ class MainActivity : ComponentActivity(){
         }
 
 
-        val vibrations = Vibrations(this)
-        /*var vibrating : Boolean= false;
-        */
+
+        //val vibrations = Vibrations(this)
+
+        //Testing view
+
+
 
         setContent {
 
             BicyclePriorityTheme {
-                val listState = rememberScalingLazyListState()
-                ScalingLazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colors.background),
-                    state = listState,
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment= Alignment.CenterHorizontally
-                ) {
-                    item{ locationView.GPS(locationDetails) }
 
-                    /*item{ trafficLightView.viewTrafficLight() }
-                    item{ Button(
-                        onClick = {
-                            vibrating = !vibrating
-                            if(vibrating){
-                                vibrations.increasingVibration()
-                            }else {
-                                vibrations.stopVibration()
-                            }
-                        }
-                    ) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = "Start/stop vibrating",
+                val soundEnabled = remember{ mutableStateOf(true) }
+                val setSoundEnabled = fun(soundBool: Boolean) {soundEnabled.value = soundBool}
+                val vibrationsEnabled = remember{ mutableStateOf(true) }
+                val setVibrationEnabled = fun(vibrationBool: Boolean) {vibrationsEnabled.value = vibrationBool}
+                val trackingOngoing = remember { mutableStateOf(false)}
+                val startTracking = fun(){trackingOngoing.value = true}
+                val stopTracking = fun(){trackingOngoing.value = false}
+                Scaffold(
+                    timeText = { TimeText() }
+                ) {
+                    if(trackingOngoing.value){
+                        trackingScreenView.TrackingScreen(
+                            stopTracking = stopTracking
                         )
-                    }}
-                    item{
-                        Button(onClick = {
-                            soundPlayer.testSound()
-                        }) {
-                            Text(text = "Play sound")
-                        }
-                    }*/
+                    }else {
+                        homeScreenView.HomeScreen(
+                            soundEnabled = soundEnabled.value,
+                            setSoundEnabled = setSoundEnabled,
+                            vibrationsEnabled = vibrationsEnabled.value,
+                            setVibrationEnabled = setVibrationEnabled,
+                            startActivity = startTracking
+                        )
+                    }
                 }
+
+
+
             }
         }
-
     }
+
 
     override fun onPause() {
         unregisterReceiver(locationReceiver)
