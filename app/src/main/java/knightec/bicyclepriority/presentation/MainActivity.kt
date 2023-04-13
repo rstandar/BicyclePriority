@@ -28,6 +28,7 @@ import knightec.bicyclepriority.presentation.view.HomeScreenView
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
+import java.text.DateFormat
 
 
 class MainActivity : ComponentActivity(){
@@ -68,43 +69,34 @@ class MainActivity : ComponentActivity(){
         setContent {
 
             BicyclePriorityTheme {
-                val listState = rememberScalingLazyListState()
+
                 val soundEnabled = remember{ mutableStateOf(true) }
                 val setSoundEnabled = fun(soundBool: Boolean) {soundEnabled.value = soundBool}
                 val vibrationsEnabled = remember{ mutableStateOf(true) }
                 val setVibrationEnabled = fun(vibrationBool: Boolean) {vibrationsEnabled.value = vibrationBool}
-                val activityOngoing = remember { mutableStateOf(true)} //TODO: come up with better name for field
-                val startActivity = fun(){activityOngoing.value = true} //TODO: come up with better name for function
-                val stopActivity = fun(){activityOngoing.value = false} //TODO: come up with better name for function
-
-                ScalingLazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colors.background),
-                    state = listState,
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment= Alignment.CenterHorizontally
+                val trackingOngoing = remember { mutableStateOf(false)}
+                val startTracking = fun(){trackingOngoing.value = true}
+                val stopTracking = fun(){trackingOngoing.value = false}
+                Scaffold(
+                    timeText = { TimeText() }
                 ) {
-                    if(activityOngoing.value){
-                        item {
-                            activeScreenView.ActiveScreen(
-                                stopActivity = stopActivity
-                            )
-                        }
+                    if(trackingOngoing.value){
+                        activeScreenView.ActiveScreen(
+                            stopTracking = stopTracking
+                        )
                     }else {
-                        item {
-                            homeScreenView.HomeScreen(
-                                soundEnabled = soundEnabled.value,
-                                setSoundEnabled = setSoundEnabled,
-                                vibrationsEnabled = vibrationsEnabled.value,
-                                setVibrationEnabled = setVibrationEnabled,
-                                startActivity = startActivity
-                            )
-                        }
+                        homeScreenView.HomeScreen(
+                            soundEnabled = soundEnabled.value,
+                            setSoundEnabled = setSoundEnabled,
+                            vibrationsEnabled = vibrationsEnabled.value,
+                            setVibrationEnabled = setVibrationEnabled,
+                            startActivity = startTracking
+                        )
                     }
-                    //item{ locationView.GPS(locationDetails) }
-
                 }
+
+
+
             }
         }
     }

@@ -1,25 +1,35 @@
 package knightec.bicyclepriority.presentation.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material.*
+import androidx.wear.compose.material.MaterialTheme
 
-import androidx.wear.compose.material.ToggleChip
-import androidx.wear.compose.material.ToggleChipDefaults
 import knightec.bicyclepriority.presentation.theme.wearColorPalette
 
 class HomeScreenView {
 
     @Composable
     fun HomeScreen (soundEnabled: Boolean, setSoundEnabled: (Boolean) -> Unit, vibrationsEnabled: Boolean, setVibrationEnabled: (Boolean) -> Unit, startActivity: ()->Unit) {
-        Column() {
-            StartButton(text = "Start",startActivity)
-            HomeScreenToggleSwitch(soundEnabled,setSoundEnabled,"Sound")
-            HomeScreenToggleSwitch(vibrationsEnabled,setVibrationEnabled,"Vibrations")
+        ScalingLazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment= Alignment.CenterHorizontally
+        ) {
+            item { StartButton(text = "Start",startActivity) }
+            item { HomeScreenToggleSwitch(soundEnabled,setSoundEnabled,"Sound") }
+            item { HomeScreenToggleSwitch(vibrationsEnabled,setVibrationEnabled,"Vibrations") }
         }
     }
 
@@ -34,11 +44,15 @@ class HomeScreenView {
             ,
             shape = RoundedCornerShape(50),
             onClick = {startActivity()},
-            colors = ButtonDefaults.buttonColors(backgroundColor = wearColorPalette.primary)
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = wearColorPalette.primary
+            )
         ){
-            Text(text = text)
+            Text(
+                color = wearColorPalette.onPrimary,
+                text = text
+            )
         }
-
     }
 
     @Composable
@@ -51,7 +65,12 @@ class HomeScreenView {
                 .height(40.dp)
                 .fillMaxSize(),
             label = {
-                Text(text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(
+                    color = wearColorPalette.onPrimary,
+                    text = text,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             },
             colors = ToggleChipDefaults.toggleChipColors(
                 checkedStartBackgroundColor = wearColorPalette.primary,
@@ -63,7 +82,10 @@ class HomeScreenView {
                 Switch(
                     checked = status,
                     onCheckedChange = {updateStatus(it)},
-                    enabled = true
+                    enabled = true,
+                    colors = SwitchDefaults.colors(
+                        uncheckedTrackColor = wearColorPalette.primary
+                    )
                 )
             }
         )
