@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.theme.wearColorPalette
 
-class ActiveScreenView {
+class TrackingScreenView {
     @Composable
-    fun ActiveScreen(stopTracking: () -> Unit) {
+    fun TrackingScreen(stopTracking: () -> Unit) {
         ScalingLazyColumn(
             modifier = Modifier
                 .background(MaterialTheme.colors.background),

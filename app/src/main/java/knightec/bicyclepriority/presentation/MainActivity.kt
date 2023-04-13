@@ -11,24 +11,18 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
-import knightec.bicyclepriority.presentation.view.ActiveScreenView
+import knightec.bicyclepriority.presentation.view.TrackingScreenView
 import knightec.bicyclepriority.presentation.view.HomeScreenView
 import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
-import java.text.DateFormat
 
 
 class MainActivity : ComponentActivity(){
@@ -43,7 +37,7 @@ class MainActivity : ComponentActivity(){
 
         val trafficLightViewModel = TrafficLightViewModel(this.application)
         val homeScreenView = HomeScreenView()
-        val activeScreenView = ActiveScreenView()
+        val trackingScreenView = TrackingScreenView()
         soundPlayer = SoundPlayer(this)
 
         locationReceiver = LocationReceiver()
@@ -81,7 +75,7 @@ class MainActivity : ComponentActivity(){
                     timeText = { TimeText() }
                 ) {
                     if(trackingOngoing.value){
-                        activeScreenView.ActiveScreen(
+                        trackingScreenView.TrackingScreen(
                             stopTracking = stopTracking
                         )
                     }else {
