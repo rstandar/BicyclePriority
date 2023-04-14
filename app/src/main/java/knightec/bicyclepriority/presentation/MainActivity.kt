@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity(){
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
     private lateinit var dataReceiver: DataReceiver
-    private val locationDetailsState = mutableStateOf(LocationDetails("0","0","0"))
+    private val locationDetailsState = mutableStateOf(LocationDetails("0","0","Waiting for GPS Connection..."))
     private val statusState = mutableStateOf("")
     private val distanceState = mutableStateOf("")
     private lateinit var soundPlayer: SoundPlayer
