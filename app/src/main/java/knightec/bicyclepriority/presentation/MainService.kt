@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.android.volley.Request
@@ -92,8 +93,6 @@ class MainService : Service() {
     }
 
     private fun broadcastData (location : LocationDetails, status : String, distance : String) {
-        // TODO remove comment
-        // This gets called
         val sendCurrentData = Intent()
         sendCurrentData.action = "GET_CURRENT_DATA"
         sendCurrentData.putExtra("CURRENT_LOCATION_LAT",location.latitude)
@@ -113,7 +112,6 @@ class MainService : Service() {
         reqBody.put("lon",curLocation.longitude)
         reqBody.put("prev_lat",prevLocation.latitude)
         reqBody.put("prev_lon",prevLocation.longitude)
-
 
         val req = JsonObjectRequest(
             Request.Method.POST,url,reqBody,
