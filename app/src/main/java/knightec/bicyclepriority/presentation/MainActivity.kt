@@ -28,8 +28,10 @@ import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 class MainActivity : ComponentActivity(){
     private lateinit var locationView : LocationView
     private lateinit var trafficLightView : TrafficLightView
-    private lateinit var locationReceiver: LocationReceiver
-    private val locationDetails = mutableStateOf(LocationDetails("0","0","0"))
+    private lateinit var dataReceiver: DataReceiver
+    private val locationDetailsState = mutableStateOf(LocationDetails("0","0","Locating"))
+    private val statusState = mutableStateOf("")
+    private val distanceState = mutableStateOf("")
     private lateinit var soundPlayer: SoundPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,19 +42,12 @@ class MainActivity : ComponentActivity(){
         val trackingScreenView = TrackingScreenView()
         soundPlayer = SoundPlayer(this)
 
-        locationReceiver = LocationReceiver()
-        registerReceiver(locationReceiver, IntentFilter("GET_CURRENT_LOCATION"))
+        dataReceiver = DataReceiver()
+        registerReceiver(dataReceiver, IntentFilter("GET_CURRENT_DATA"))
 
         trafficLightView = TrafficLightView(trafficLightViewModel)
         getLocationPermissions()
         locationView = LocationView()
-
-        Intent(applicationContext, MainService::class.java).apply {
-            action = MainService.ACTION_START
-            startService(this)
-        }
-
-
 
         //val vibrations = Vibrations(this)
 
@@ -76,8 +71,15 @@ class MainActivity : ComponentActivity(){
                 ) {
                     if(trackingOngoing.value){
                         trackingScreenView.TrackingScreen(
-                            stopTracking = stopTracking
+                            stopTracking = stopTracking,
+                            location = locationDetailsState.value,
+                            status = statusState.value,
+                            distance = distanceState.value
                         )
+                        Intent(applicationContext, MainService::class.java).apply {
+                            action = MainService.ACTION_START
+                            startService(this)
+                        }
                     }else {
                         homeScreenView.HomeScreen(
                             soundEnabled = soundEnabled.value,
@@ -86,26 +88,26 @@ class MainActivity : ComponentActivity(){
                             setVibrationEnabled = setVibrationEnabled,
                             startActivity = startTracking
                         )
+                        Intent(applicationContext, MainService::class.java).apply {
+                            action = MainService.ACTION_STOP
+                            stopService(this)
+                        }
                     }
                 }
-
-
-
             }
         }
     }
 
 
     override fun onPause() {
-        unregisterReceiver(locationReceiver)
+        unregisterReceiver(dataReceiver)
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        registerReceiver(locationReceiver, IntentFilter("GET_CURRENT_LOCATION"))
+        registerReceiver(dataReceiver, IntentFilter("GET_CURRENT_LOCATION"))
     }
-
 
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
     private fun getLocationPermissions() {
@@ -129,14 +131,20 @@ class MainActivity : ComponentActivity(){
         }
 
 
-    inner class LocationReceiver () : BroadcastReceiver() {
+    inner class DataReceiver () : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == "GET_CURRENT_LOCATION") {
+            if (intent.action == "GET_CURRENT_DATA") {
                 val lat = intent.getStringExtra("CURRENT_LOCATION_LAT")
                 val long = intent.getStringExtra("CURRENT_LOCATION_LONG")
                 val speed = intent.getStringExtra("CURRENT_LOCATION_SPEED")
+                val status = intent.getStringExtra("CURRENT_STATUS")
+                val distance = intent.getStringExtra("CURRENT_DISTANCE")
                 if(lat != null && long != null && speed != null) {
-                    locationDetails.value = LocationDetails(lat, long, speed)
+                    locationDetailsState.value = LocationDetails(lat, long, speed)
+                }
+                if(status != null && distance != null) {
+                    statusState.value = status
+                    distanceState.value = distance
                 }
             }
         }
