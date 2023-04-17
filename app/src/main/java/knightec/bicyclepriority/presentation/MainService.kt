@@ -62,7 +62,7 @@ class MainService : Service() {
         val notification = NotificationCompat.Builder(this, "location").setContentTitle("Tracking...").setContentText("Location = null").setSmallIcon(R.mipmap.ic_launcher).setOngoing(true)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        locationClient.getLocationUpdates(1000L).catch { e -> e.printStackTrace() }.onEach {  location ->
+        locationClient.getLocationUpdates(2000).catch { e -> e.printStackTrace() }.onEach {  location ->
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
             val speed = location.speed.toString()
@@ -70,6 +70,7 @@ class MainService : Service() {
             val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)") //Used for foreground service
             getTrafficLightInformation(curLocation, prevLocation)
             notificationManager.notify(1, updatedNotification.build())
+            soundPlayer.beepSound()
             prevLocation = LocationDetails(lat,long,speed)
         }
             .launchIn(serviceScope)
