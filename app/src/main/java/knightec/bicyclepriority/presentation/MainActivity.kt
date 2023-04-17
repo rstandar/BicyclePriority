@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity(){
         }
     }
 
-
+    /*
     override fun onPause() {
         unregisterReceiver(dataReceiver)
         super.onPause()
@@ -108,6 +108,8 @@ class MainActivity : ComponentActivity(){
         super.onResume()
         registerReceiver(dataReceiver, IntentFilter("GET_CURRENT_LOCATION"))
     }
+    */
+
 
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
     private fun getLocationPermissions() {
