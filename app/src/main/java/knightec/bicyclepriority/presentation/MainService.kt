@@ -183,19 +183,17 @@ class MainService : Service() {
     }
 
     private fun increaseSpeed(){
-        //TODO: Give user indications to increase speed
         if(state != States.ACCELERATING){
             state = States.ACCELERATING
-            //TODO Play sound once
+            soundPlayer.speedUpSound()
             vibrations.increaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
     }
 
     private fun decreaseSpeed(){
-        //TODO: Give user indications to decrease speed
         if(state != States.DECELERATING){
             state = States.DECELERATING
-            //TODO Play sound once
+            soundPlayer.slowDownSound()
             vibrations.decreaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
     }

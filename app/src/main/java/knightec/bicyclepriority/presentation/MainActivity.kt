@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity(){
                             status = statusState.value,
                             distance = distanceState.value
                         )
-                        Intent(applicationContext, MainService::class.java).apply {
+                        Intent(applicationContext, MainService::class.java).apply {//Starts foreground service
                             action = MainService.ACTION_START
                             startService(this)
                         }
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity(){
                             setVibrationEnabled = setVibrationEnabled,
                             startActivity = startTracking
                         )
-                        Intent(applicationContext, MainService::class.java).apply {
+                        Intent(applicationContext, MainService::class.java).apply {// Stops foreground service
                             action = MainService.ACTION_STOP
                             stopService(this)
                         }
