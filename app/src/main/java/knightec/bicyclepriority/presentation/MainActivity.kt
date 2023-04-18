@@ -76,7 +76,10 @@ class MainActivity : ComponentActivity(){
                 ) {
                     if(trackingOngoing.value){
                         trackingScreenView.TrackingScreen(
-                            stopTracking = stopTracking
+                            stopTracking = stopTracking,
+                            location = locationDetails.value,
+                            status = "Green",
+                            distance = "500"
                         )
                     }else {
                         homeScreenView.HomeScreen(
