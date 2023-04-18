@@ -41,20 +41,36 @@ class TrackingScreenView {
 
     @Composable
     private fun TrackingInformation (speed: String, status: String, distance: String) {
-        Card(
-            onClick = {  },
-            backgroundPainter = CardDefaults.imageWithScrimBackgroundPainter(
-                backgroundImagePainter = ColorPainter(wearColorPalette.primary)
-            ),
-            contentColor = wearColorPalette.primary,
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .padding(0.dp,20.dp),
-            enabled = false
-        ) {
-            TrackingText(text = "Speed: $speed km/h")
-            TrackingText(text = "Status: $status")
-            TrackingText(text = "Distance: $distance m")
+        if(speed == "Locating"){
+            Card(
+                onClick = { },
+                backgroundPainter = CardDefaults.imageWithScrimBackgroundPainter(
+                    backgroundImagePainter = ColorPainter(wearColorPalette.primary)
+                ),
+                contentColor = wearColorPalette.primary,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(0.dp, 20.dp),
+                enabled = false
+            ) {
+                TrackingText(text = "Locating...")
+            }
+        } else {
+            Card(
+                onClick = { },
+                backgroundPainter = CardDefaults.imageWithScrimBackgroundPainter(
+                    backgroundImagePainter = ColorPainter(wearColorPalette.primary)
+                ),
+                contentColor = wearColorPalette.primary,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(0.dp, 20.dp),
+                enabled = false
+            ) {
+                TrackingText(text = "Speed: $speed km/h")
+                TrackingText(text = "Status: $status")
+                TrackingText(text = "Distance: $distance m")
+            }
         }
     }
 
