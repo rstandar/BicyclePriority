@@ -12,15 +12,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.wear.compose.material.*
 import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
-import knightec.bicyclepriority.presentation.view.TrackingScreenView
 import knightec.bicyclepriority.presentation.view.HomeScreenView
 import knightec.bicyclepriority.presentation.view.LocationView
+import knightec.bicyclepriority.presentation.view.TrackingScreenView
 import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
@@ -33,9 +32,20 @@ class MainActivity : ComponentActivity(){
     private val statusState = mutableStateOf("")
     private val distanceState = mutableStateOf("")
     private lateinit var soundPlayer: SoundPlayer
+    private val trackingOngoing = mutableStateOf(false)
+    private val vibrationsEnabled = mutableStateOf(true)
+    private val soundEnabled = mutableStateOf(true)
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            trackingOngoing.value = savedInstanceState.getBoolean("trackingOngoing")
+            vibrationsEnabled.value = savedInstanceState.getBoolean("vibrationsEnabled")
+            soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
+        }
 
         val trafficLightViewModel = TrafficLightViewModel(this.application)
         val homeScreenView = HomeScreenView()
@@ -59,11 +69,11 @@ class MainActivity : ComponentActivity(){
 
             BicyclePriorityTheme {
 
-                val soundEnabled = remember{ mutableStateOf(true) }
+                //val soundEnabled = remember{ mutableStateOf(true) }
                 val setSoundEnabled = fun(soundBool: Boolean) {soundEnabled.value = soundBool}
-                val vibrationsEnabled = remember{ mutableStateOf(true) }
+                //val vibrationsEnabled = remember{ mutableStateOf(true) }
                 val setVibrationEnabled = fun(vibrationBool: Boolean) {vibrationsEnabled.value = vibrationBool}
-                val trackingOngoing = remember { mutableStateOf(false)}
+                //val trackingOngoing = remember { mutableStateOf(false)}
                 val startTracking = fun(){trackingOngoing.value = true}
                 val stopTracking = fun(){trackingOngoing.value = false}
                 Scaffold(
@@ -98,7 +108,19 @@ class MainActivity : ComponentActivity(){
         }
     }
 
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        savedInstanceState.putBoolean("trackingOngoing", trackingOngoing.value)
+        savedInstanceState.putBoolean("vibrationsEnabled", vibrationsEnabled.value)
+        savedInstanceState.putBoolean("soundEnabled", soundEnabled.value)
+    }
 
+    override fun onRestoreInstanceState( savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        trackingOngoing.value = savedInstanceState.getBoolean("trackingOngoing")
+        vibrationsEnabled.value = savedInstanceState.getBoolean("vibrationsEnabled")
+        soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
+    }
     override fun onPause() {
         unregisterReceiver(dataReceiver)
         super.onPause()
