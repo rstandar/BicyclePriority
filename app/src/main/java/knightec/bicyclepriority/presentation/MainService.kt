@@ -102,7 +102,7 @@ class MainService : Service() {
         sendCurrentData.action = "GET_CURRENT_DATA"
         sendCurrentData.putExtra("CURRENT_LOCATION_LAT",location.latitude)
         sendCurrentData.putExtra("CURRENT_LOCATION_LONG",location.longitude)
-        sendCurrentData.putExtra("CURRENT_LOCATION_SPEED",location.speed.substring(0,3))
+        sendCurrentData.putExtra("CURRENT_LOCATION_SPEED",location.speed)
         sendCurrentData.putExtra("CURRENT_STATUS",status)
         sendCurrentData.putExtra("CURRENT_DISTANCE",distance)
 

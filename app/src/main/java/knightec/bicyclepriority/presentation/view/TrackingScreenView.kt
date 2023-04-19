@@ -33,7 +33,7 @@ class TrackingScreenView {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TrackingInformation(speed = location.value.speed, status = status.value, distance = distance.value)
+                    TrackingInformation(speed = (location.value.speed.toFloat()*3.6).toString().substring(0,3), status = status.value, distance = distance.value)
                     StopButton (stopTracking = stopTracking)
                 }
             }
