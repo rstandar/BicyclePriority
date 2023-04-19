@@ -72,9 +72,9 @@ class MainActivity : ComponentActivity(){
                     if(trackingOngoing.value){
                         trackingScreenView.TrackingScreen(
                             stopTracking = stopTracking,
-                            location = locationDetailsState.value,
-                            status = statusState.value,
-                            distance = distanceState.value
+                            location = locationDetailsState,
+                            status = statusState,
+                            distance = distanceState
                         )
                         Intent(applicationContext, MainService::class.java).apply {
                             action = MainService.ACTION_START

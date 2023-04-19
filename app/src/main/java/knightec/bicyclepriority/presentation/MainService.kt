@@ -68,10 +68,14 @@ class MainService : Service() {
             val speed = location.speed.toString()
             val curLocation = LocationDetails(lat,long,speed)
             val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)") //Used for foreground service
-            getTrafficLightInformation(curLocation, prevLocation)
+
             notificationManager.notify(1, updatedNotification.build())
-            soundPlayer.beepSound()
-            prevLocation = LocationDetails(lat,long,speed)
+            var dist = calculateDistance(curLocation,prevLocation)
+            if(dist >2f) {
+                soundPlayer.beepSound()
+                getTrafficLightInformation(curLocation, prevLocation)
+                prevLocation = LocationDetails(lat, long, speed)
+            }
         }
             .launchIn(serviceScope)
 
@@ -98,7 +102,7 @@ class MainService : Service() {
         sendCurrentData.action = "GET_CURRENT_DATA"
         sendCurrentData.putExtra("CURRENT_LOCATION_LAT",location.latitude)
         sendCurrentData.putExtra("CURRENT_LOCATION_LONG",location.longitude)
-        sendCurrentData.putExtra("CURRENT_LOCATION_SPEED",location.speed)
+        sendCurrentData.putExtra("CURRENT_LOCATION_SPEED",location.speed.substring(0,3))
         sendCurrentData.putExtra("CURRENT_STATUS",status)
         sendCurrentData.putExtra("CURRENT_DISTANCE",distance)
 
@@ -107,28 +111,32 @@ class MainService : Service() {
 
     private fun getTrafficLightInformation(curLocation: LocationDetails, prevLocation : LocationDetails){
         val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
-
         val reqBody = JSONObject()
-        reqBody.put("lat",curLocation.latitude)
-        reqBody.put("lon",curLocation.longitude)
-        reqBody.put("prev_lat",prevLocation.latitude)
-        reqBody.put("prev_lon",prevLocation.longitude)
+        reqBody.put("lat", curLocation.latitude)
+        reqBody.put("lon", curLocation.longitude)
+        reqBody.put("prev_lat", prevLocation.latitude)
+        reqBody.put("prev_lon", prevLocation.longitude)
 
         val req = JsonObjectRequest(
-            Request.Method.POST,url,reqBody,
-            {
-                    response ->
+            Request.Method.POST, url, reqBody,
+            { response ->
                 run {
                     val timeLeft = response["time_left"].toString()
-                    val distance = response["distance"].toString()
+                    val distance = response["distance"].toString().substringBefore(".")
                     val status = response["status"] as String
-                    val speed = if(curLocation.speed.toFloat() == 0.0f) 0.001f else curLocation.speed.toFloat() //Used to avoid div by zero error
+                    val speed =
+                        if (curLocation.speed.toFloat() == 0.0f) 0.001f else curLocation.speed.toFloat() //Used to avoid div by zero error
                     broadcastData(curLocation, status, distance)
-                    decideAction(timeLeft.toDouble()-(distance.toDouble()/speed), distance.toDouble(), status, curLocation.speed.toFloat())
+                    decideAction(
+                        timeLeft.toDouble() - (distance.toDouble() / speed),
+                        distance.toDouble(),
+                        status,
+                        curLocation.speed.toFloat()
+                    )
                 }
             },
-            {
-                    error -> print("ERROR: $error")
+            { error ->
+                print("ERROR: $error")
             }
         )
         queue.add(req)
@@ -197,5 +205,15 @@ class MainService : Service() {
             soundPlayer.slowDownSound()
             vibrations.decreaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
+    }
+
+
+    /**
+     * Takes two location details as parameter, and returns the distance as a float as result
+     * */
+    private fun calculateDistance(location1: LocationDetails, location2: LocationDetails): Float{
+        var res = FloatArray(2)
+        Location.distanceBetween(location1.latitude.toDouble(),location1.longitude.toDouble(),location2.latitude.toDouble(),location2.longitude.toDouble(),res)
+        return res[0]
     }
 }
