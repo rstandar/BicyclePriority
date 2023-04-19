@@ -41,7 +41,7 @@ class LocationClient(private val context: Context, private val client: FusedLoca
             val request : com.google.android.gms.location.LocationRequest = com.google.android.gms.location.LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
                 interval
-            ).build()
+            ).setMinUpdateIntervalMillis(interval).build()
 
             val locationCallback = object : LocationCallback() {
                 override fun onLocationResult(res: LocationResult) {

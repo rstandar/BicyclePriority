@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +20,7 @@ import knightec.bicyclepriority.presentation.theme.wearColorPalette
 
 class TrackingScreenView {
     @Composable
-    fun TrackingScreen(stopTracking: () -> Unit, location : LocationDetails, status : String, distance : String ) {
+    fun TrackingScreen(stopTracking: () -> Unit, location : MutableState<LocationDetails>, status : MutableState<String>, distance : MutableState<String> ) {
         ScalingLazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -32,7 +33,7 @@ class TrackingScreenView {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TrackingInformation(speed = location.speed, status = status, distance = distance)
+                    TrackingInformation(speed = location.value.speed, status = status.value, distance = distance.value)
                     StopButton (stopTracking = stopTracking)
                 }
             }
