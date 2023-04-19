@@ -155,15 +155,18 @@ class MainService : Service() {
 
         if(distance>5f && distance < distanceLimit){
             if(status=="green"){ //Green light
-                if(time >= -15f && time<=2f){ //if cyclist will arrive at traffic light 15s after red light to 2 seconds before red light, increase speed to make sure they make it.
+                if(time >= -15f && time<=2f){ //if cyclist is expected to arrive at traffic light 15s after red light to 2 seconds before red light, increase speed to make sure they make it.
                     increaseSpeed()
                 }
-                else if(time <-15f){
+                else if(time <-15f && time > -30f){
                     decreaseSpeed()
                 }
                 else{
                     if(state != States.NEUTRAL) {
                         vibrations.stopVibration()
+                        if(state == States.ACCELERATING) {
+                            soundPlayer.speedAchievedSound()
+                        }
                         state = States.NEUTRAL
                     }
                 }
@@ -172,6 +175,9 @@ class MainService : Service() {
                 if(time <= -3f && time >= -15f){
                     if(state != States.NEUTRAL) {
                         vibrations.stopVibration()
+                        if(state == States.ACCELERATING) {
+                            soundPlayer.speedAchievedSound()
+                        }
                         state = States.NEUTRAL
                     }
                 }

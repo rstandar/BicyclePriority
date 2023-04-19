@@ -33,4 +33,15 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer.start()
     }
 
+    fun speedAchievedSound() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.cancel_acceleration)
+        mediaPlayer.setOnCompletionListener {
+            @Override
+            fun onCompletion(mediaPlayer : MediaPlayer) {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.start()
+    }
+
 }
