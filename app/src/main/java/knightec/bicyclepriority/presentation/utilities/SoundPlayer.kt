@@ -6,14 +6,13 @@ import knightec.bicyclepriority.R
 
 class SoundPlayer(private val context: Context) {
 
-    private val beepPlayer = MediaPlayer.create(context, R.raw.beep)
-
+    val beepPlayer = MediaPlayer.create(context, R.raw.beep)
     fun beepSound() {
         beepPlayer.start()
     }
 
-    fun testSound() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.slowdown)
+    fun slowDownSound() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.decrease_your_speed_male)
         mediaPlayer.setOnCompletionListener {
             @Override
             fun onCompletion(mediaPlayer : MediaPlayer) {
@@ -23,6 +22,15 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer.start()
     }
 
-
+    fun speedUpSound() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.increase_your_speed_male)
+        mediaPlayer.setOnCompletionListener {
+            @Override
+            fun onCompletion(mediaPlayer : MediaPlayer) {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.start()
+    }
 
 }

@@ -123,11 +123,11 @@ class MainActivity : ComponentActivity(){
 
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            requestResults ->
-                if(requestResults.get(Manifest.permission.ACCESS_FINE_LOCATION) == false){
-                    Toast.makeText(this,"Location permissions needed for application to operate.",Toast.LENGTH_LONG).show()
-                    getLocationPermissions()
-                } else Toast.makeText(this,"Permissions granted.",Toast.LENGTH_SHORT).show()
+                requestResults ->
+            if(requestResults.get(Manifest.permission.ACCESS_FINE_LOCATION) == false){
+                Toast.makeText(this,"Location permissions needed for application to operate.",Toast.LENGTH_LONG).show()
+                getLocationPermissions()
+            } else Toast.makeText(this,"Permissions granted.",Toast.LENGTH_SHORT).show()
         }
 
 
