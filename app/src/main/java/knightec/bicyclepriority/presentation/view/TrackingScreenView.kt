@@ -33,7 +33,7 @@ class TrackingScreenView {
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TrackingInformation(speed = (location.value.speed.toFloat()*3.6).toString().substring(0,3), status = status.value, distance = distance.value)
+                    TrackingInformation(speed = location.value.speed, status = status.value, distance = distance.value)
                     StopButton (stopTracking = stopTracking)
                 }
             }
@@ -68,7 +68,7 @@ class TrackingScreenView {
                     .padding(0.dp, 20.dp),
                 enabled = false
             ) {
-                TrackingText(text = "Speed: $speed km/h")
+                TrackingText(text = "Speed: "+(speed.toFloat()*3.6).toString().substring(0,3)+ " km/h")
                 TrackingText(text = "Status: $status")
                 TrackingText(text = "Distance: $distance m")
             }
