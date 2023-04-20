@@ -12,7 +12,7 @@ class SoundPlayer(private val context: Context) {
     }
 
     fun slowDownSound() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.decrease_your_speed_male)
+        val mediaPlayer = MediaPlayer.create(context, R.raw.lower_speed_swedish)
         mediaPlayer.setOnCompletionListener {
             @Override
             fun onCompletion(mediaPlayer : MediaPlayer) {
@@ -23,7 +23,8 @@ class SoundPlayer(private val context: Context) {
     }
 
     fun speedUpSound() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.increase_your_speed_male)
+        val mediaPlayer = MediaPlayer.create(context, R.raw.raise_speed_swedish
+        )
         mediaPlayer.setOnCompletionListener {
             @Override
             fun onCompletion(mediaPlayer : MediaPlayer) {
@@ -34,7 +35,7 @@ class SoundPlayer(private val context: Context) {
     }
 
     fun speedAchievedSound() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.cancel_acceleration)
+        val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved)
         mediaPlayer.setOnCompletionListener {
             @Override
             fun onCompletion(mediaPlayer : MediaPlayer) {
