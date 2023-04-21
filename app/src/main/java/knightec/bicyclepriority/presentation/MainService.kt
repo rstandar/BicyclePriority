@@ -5,7 +5,9 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.location.Location
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -33,9 +35,17 @@ class MainService : Service() {
     private lateinit var queue : RequestQueue
     private lateinit var vibrations : Vibrations
     private lateinit var soundPlayer: SoundPlayer
+    private var curLocation = LocationDetails("0","0","0")
     private var prevLocation = LocationDetails("0","0","0")
     enum class States {ACCELERATING, DECELERATING, NEUTRAL }
     private var state : States = States.NEUTRAL
+    private val pollHandler = Handler(Looper.getMainLooper())
+    private val poll = object: Runnable {
+        override fun run(){
+            getTrafficLightInformation()
+            pollHandler.postDelayed(this, 1000)
+        }
+    }
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -57,25 +67,9 @@ class MainService : Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "location").setContentTitle("Tracking...").setContentText("Location = null").setSmallIcon(R.mipmap.ic_launcher).setOngoing(true)
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        locationClient.getLocationUpdates(2000).catch { e -> e.printStackTrace() }.onEach {  location ->
-            val lat = location.latitude.toString()
-            val long = location.longitude.toString()
-            val speed = location.speed.toString()
-            val curLocation = LocationDetails(lat,long,speed)
-            val updatedNotification = notification.setContentText("Lat is ($lat), long is ($long) and speed is ($speed)") //Used for foreground service
-
-            notificationManager.notify(1, updatedNotification.build())
-            var dist = calculateDistance(curLocation,prevLocation)
-            if(dist >2f) {
-                soundPlayer.beepSound()
-                getTrafficLightInformation(curLocation, prevLocation)
-                prevLocation = LocationDetails(lat, long, speed)
-            }
-        }
-            .launchIn(serviceScope)
+        val notification = NotificationCompat.Builder(this, "location").setContentTitle("Application is running").setContentText("").setSmallIcon(R.mipmap.ic_launcher).setOngoing(true)
+        startHttpRequests()
+        startLocationUpdates()
         startForeground(1, notification.build())
     }
 
@@ -86,6 +80,7 @@ class MainService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        pollHandler.removeCallbacks(poll)
         serviceScope.cancel()
     }
 
@@ -106,7 +101,7 @@ class MainService : Service() {
         sendBroadcast(sendCurrentData)
     }
 
-    private fun getTrafficLightInformation(curLocation: LocationDetails, prevLocation : LocationDetails){
+    private fun getTrafficLightInformation(){
         val url = "https://tubei213og.execute-api.eu-north-1.amazonaws.com/"
         val reqBody = JSONObject()
         reqBody.put("lat", curLocation.latitude)
@@ -215,4 +210,26 @@ class MainService : Service() {
         Location.distanceBetween(location1.latitude.toDouble(),location1.longitude.toDouble(),location2.latitude.toDouble(),location2.longitude.toDouble(),res)
         return res[0]
     }
+
+    private fun startHttpRequests(){
+        pollHandler.post(poll)
+    }
+
+    private fun startLocationUpdates(){
+        locationClient.getLocationUpdates(1000).catch { e -> e.printStackTrace() }.onEach {  location ->
+            val lat = location.latitude.toString()
+            val long = location.longitude.toString()
+            val speed = location.speed.toString()
+            val tmpCurLocation = LocationDetails(lat,long,speed)
+
+            curLocation.speed = speed
+            var dist = calculateDistance(tmpCurLocation,prevLocation)
+            if(dist >2f) {
+                prevLocation = curLocation
+                curLocation = tmpCurLocation
+            }
+        }.launchIn(serviceScope)
+    }
+
+
 }
