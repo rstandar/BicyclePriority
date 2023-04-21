@@ -68,7 +68,7 @@ class TrackingScreenView {
                     .padding(0.dp, 20.dp),
                 enabled = false
             ) {
-                TrackingText(text = "Speed: "+(speed.toFloat()*3.6).toString().substring(0,3)+ " km/h")
+                TrackingText(text = "Speed: "+(speed.toFloat()*3.6).toString().substringBefore(".")+ " km/h")
                 TrackingText(text = "Status: $status")
                 TrackingText(text = "Distance: $distance m")
             }
