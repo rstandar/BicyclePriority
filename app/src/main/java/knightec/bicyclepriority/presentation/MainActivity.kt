@@ -120,6 +120,11 @@ class MainActivity : ComponentActivity(){
         soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(dataReceiver)
+    }
+
     /*
     override fun onPause() {
         unregisterReceiver(dataReceiver)
