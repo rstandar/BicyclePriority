@@ -76,7 +76,6 @@ class MainService : Service() {
             }
         }
             .launchIn(serviceScope)
-
         startForeground(1, notification.build())
     }
 
@@ -143,12 +142,12 @@ class MainService : Service() {
     private fun decideAction (time: Double, distance: Double, status: String, speed: Float) {
         val distanceLimit = if(speed>6f){ //In m/s, represent ~21.6km/h
             150f
-        } else if(speed > 4f) { //In m/s, represent ~14.4km/h which is just below Rasmus's average biking speed
+        }
+        else if(speed > 4f) { //In m/s, represent ~14.4km/h which is just below Rasmus's average biking speed
             100f
-        } else if(speed > 2f){ //In m/s, represent ~7.2km/h
+        }
+        else {
             50f
-        } else { // Slower than 7.2km/h
-            30f
         }
 
         if(distance>5f && distance < distanceLimit){
@@ -162,9 +161,7 @@ class MainService : Service() {
                 else{
                     if(state != States.NEUTRAL) {
                         vibrations.stopVibration()
-                        if(state == States.ACCELERATING) {
-                            soundPlayer.speedAchievedSound()
-                        }
+                        soundPlayer.speedAchievedSound()
                         state = States.NEUTRAL
                     }
                 }
@@ -173,9 +170,7 @@ class MainService : Service() {
                 if(time <= -3f && time >= -15f){
                     if(state != States.NEUTRAL) {
                         vibrations.stopVibration()
-                        if(state == States.ACCELERATING) {
-                            soundPlayer.speedAchievedSound()
-                        }
+                        soundPlayer.speedAchievedSound()
                         state = States.NEUTRAL
                     }
                 }
