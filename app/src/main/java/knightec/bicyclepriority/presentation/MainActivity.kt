@@ -18,15 +18,11 @@ import knightec.bicyclepriority.presentation.repository.LocationDetails
 import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.view.HomeScreenView
-import knightec.bicyclepriority.presentation.view.LocationView
 import knightec.bicyclepriority.presentation.view.TrackingScreenView
-import knightec.bicyclepriority.presentation.view.TrafficLightView
 import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
 
 class MainActivity : ComponentActivity(){
-    private lateinit var locationView : LocationView
-    private lateinit var trafficLightView : TrafficLightView
     private lateinit var dataReceiver: DataReceiver
     private val locationDetailsState = mutableStateOf(LocationDetails("0","0","Locating"))
     private val statusState = mutableStateOf("")
@@ -45,7 +41,6 @@ class MainActivity : ComponentActivity(){
             soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
         }
 
-        val trafficLightViewModel = TrafficLightViewModel(this.application)
         val homeScreenView = HomeScreenView()
         val trackingScreenView = TrackingScreenView()
         soundPlayer = SoundPlayer(this)
@@ -53,24 +48,16 @@ class MainActivity : ComponentActivity(){
         dataReceiver = DataReceiver()
         registerReceiver(dataReceiver, IntentFilter("GET_CURRENT_DATA"))
 
-        trafficLightView = TrafficLightView(trafficLightViewModel)
         getLocationPermissions()
-        locationView = LocationView()
 
-        //val vibrations = Vibrations(this)
-
-        //Testing view
 
 
 
         setContent {
 
             BicyclePriorityTheme {
-                //val soundEnabled = remember{ mutableStateOf(true) }
                 val setSoundEnabled = fun(soundBool: Boolean) {soundEnabled.value = soundBool}
-                //val vibrationsEnabled = remember{ mutableStateOf(true) }
                 val setVibrationEnabled = fun(vibrationBool: Boolean) {vibrationsEnabled.value = vibrationBool}
-                //val trackingOngoing = remember { mutableStateOf(false)}
                 val startTracking = fun(){trackingOngoing.value = true}
                 val stopTracking = fun(){trackingOngoing.value = false}
                 Scaffold(
@@ -119,18 +106,6 @@ class MainActivity : ComponentActivity(){
         vibrationsEnabled.value = savedInstanceState.getBoolean("vibrationsEnabled")
         soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
     }
-
-    /*
-    override fun onPause() {
-        unregisterReceiver(dataReceiver)
-        super.onPause()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-    }
-    */
 
 
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
