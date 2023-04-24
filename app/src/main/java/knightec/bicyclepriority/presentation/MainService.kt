@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.json.JSONObject
+import java.lang.Math.pow
+import kotlin.math.pow
 
 class MainService : Service() {
 
@@ -37,6 +39,7 @@ class MainService : Service() {
     private lateinit var soundPlayer: SoundPlayer
     private var curLocation = LocationDetails("0","0","0")
     private var prevLocation = LocationDetails("0","0","0")
+    private val maxSpeed = 8.3 //In m/s, corresponds to approximately 30km/h
     enum class States {ACCELERATING, DECELERATING, NEUTRAL }
     private var state : States = States.NEUTRAL
     private val pollHandler = Handler(Looper.getMainLooper())
@@ -117,13 +120,14 @@ class MainService : Service() {
                     val distance = response["distance"].toString().substringBefore(".")
                     val status = response["status"] as String
                     val speed =
-                        if (curLocation.speed.toFloat() == 0.0f) 0.001f else curLocation.speed.toFloat() //Used to avoid div by zero error
+                        if (curLocation.speed.toDouble() == 0.0) 0.001 else curLocation.speed.toDouble() //Used to avoid div by zero error
                     broadcastData(curLocation, status, distance)
                     decideAction(
-                        timeLeft.toDouble() - (distance.toDouble() / speed),
+                        timeLeft.toDouble(),
+                        (distance.toDouble() / speed),
                         distance.toDouble(),
                         status,
-                        curLocation.speed.toFloat()
+                        curLocation.speed.toDouble()
                     )
                 }
             },
@@ -134,17 +138,62 @@ class MainService : Service() {
         queue.add(req)
     }
 
-    private fun decideAction (time: Double, distance: Double, status: String, speed: Float) {
-        val distanceLimit = if(speed>6f){ //In m/s, represent ~21.6km/h
-            225f
+    private fun decideAction (timeToStatusChange: Double, timeToArrival: Double, distance: Double, status: String, speed: Double) {
+        var distanceLimit : Double
+        var accelerationConstant : Double
+        if(speed>6f){ //In m/s, represent ~21.6km/h
+            distanceLimit = 225.0
+            accelerationConstant = 0.15
         }
         else if(speed > 4f) { //In m/s, represent ~14.4km/h which is just below Rasmus's average biking speed
-            150f
+            distanceLimit = 150.0
+            accelerationConstant = 0.3
         }
         else {
-            75f
+            distanceLimit = 75.0
+            accelerationConstant = 0.4
+        }
+        if(distance>5f && distance < distanceLimit) {
+            if(status == "green") { //Green light
+                if (timeToStatusChange - timeToArrival < -15.0 || timeToStatusChange - timeToArrival > 0.5) {
+                    if (state != States.NEUTRAL) {
+                        vibrations.stopVibration()
+                        soundPlayer.speedAchievedSound()
+                        state = States.NEUTRAL
+                    }
+                }
+                else if(distance-distanceCalculationAccelerationCapped(timeToStatusChange, accelerationConstant,speed,maxSpeed) < 0){
+                    increaseSpeed()
+                }
+                else {
+                    decreaseSpeed()
+                }
+            }
+            else { //Red light
+                if(timeToStatusChange - timeToArrival >= -0.5){
+                    decreaseSpeed()
+                }
+                else if(distance-distanceCalculationAccelerationCapped(timeToStatusChange+15, accelerationConstant,speed,maxSpeed) < 0 && timeToStatusChange - timeToArrival < -15.0){
+                    increaseSpeed()
+                }
+                else {
+                    if (state != States.NEUTRAL) {
+                        vibrations.stopVibration()
+                        soundPlayer.speedAchievedSound()
+                        state = States.NEUTRAL
+                    }
+                }
+            }
+        }
+        else {
+            if(state != States.NEUTRAL) {
+                soundPlayer.speedAchievedSound()
+                vibrations.stopVibration()
+                state = States.NEUTRAL
+            }
         }
 
+        /*
         if(distance>5f && distance < distanceLimit){
             if(status=="green"){ //Green light
                 if(time >= -15f && time<=2f){ //if cyclist is expected to arrive at traffic light 15s after red light to 2 seconds before red light, increase speed to make sure they make it.
@@ -182,7 +231,7 @@ class MainService : Service() {
                 vibrations.stopVibration()
                 state = States.NEUTRAL
             }
-        }
+        }*/
     }
 
     private fun increaseSpeed(){
@@ -229,6 +278,19 @@ class MainService : Service() {
                 curLocation = tmpCurLocation
             }
         }.launchIn(serviceScope)
+    }
+
+    private fun distanceCalculationAccelerationCapped(timeToStatusChange : Double, accelerationConstant: Double, speed: Double, maxSpeed: Double) : Double{
+        var distance : Double
+        if(speed+(accelerationConstant*timeToStatusChange) < maxSpeed){
+            distance = speed*timeToStatusChange+(accelerationConstant*timeToStatusChange.pow(2.0))/2.0
+        }
+        else{
+            val timeBreakPoint = ((maxSpeed - speed)/accelerationConstant)
+            distance = speed*timeBreakPoint+(accelerationConstant*timeBreakPoint.pow(2.0))/2.0
+            distance += maxSpeed * (timeToStatusChange - timeBreakPoint)
+        }
+        return distance
     }
 
 
