@@ -107,6 +107,11 @@ class MainActivity : ComponentActivity(){
         soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(dataReceiver)
+    }
+
 
     /** Method for checking user permissions, if permissions are not granted this method launch permission settings for user.*/
     private fun getLocationPermissions() {
