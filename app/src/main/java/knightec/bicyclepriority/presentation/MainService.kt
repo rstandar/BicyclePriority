@@ -136,13 +136,13 @@ class MainService : Service() {
 
     private fun decideAction (time: Double, distance: Double, status: String, speed: Float) {
         val distanceLimit = if(speed>6f){ //In m/s, represent ~21.6km/h
-            150f
+            225f
         }
         else if(speed > 4f) { //In m/s, represent ~14.4km/h which is just below Rasmus's average biking speed
-            100f
+            150f
         }
         else {
-            50f
+            75f
         }
 
         if(distance>5f && distance < distanceLimit){
