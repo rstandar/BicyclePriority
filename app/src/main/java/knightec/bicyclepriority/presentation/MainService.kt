@@ -92,12 +92,14 @@ class MainService : Service() {
         const val ACTION_STOP = "ACTION_STOP"
     }
 
-    private fun broadcastData (location : LocationDetails, status : String, distance : String) {
+    private fun broadcastData (location : LocationDetails, status : String, distance : String, timeToStatusChange: String, timeToArrival: String) {
         val sendCurrentData = Intent()
         sendCurrentData.action = "GET_CURRENT_DATA"
         sendCurrentData.putExtra("CURRENT_LOCATION_LAT",location.latitude)
         sendCurrentData.putExtra("CURRENT_LOCATION_LONG",location.longitude)
         sendCurrentData.putExtra("CURRENT_LOCATION_SPEED",location.speed)
+        sendCurrentData.putExtra("TIME_STATUS_CHANGE",timeToStatusChange) //Debug
+        sendCurrentData.putExtra("TIME_ARRIVAL",timeToArrival) //Debug
         sendCurrentData.putExtra("CURRENT_STATUS",status)
         sendCurrentData.putExtra("CURRENT_DISTANCE",distance)
 
@@ -121,7 +123,7 @@ class MainService : Service() {
                     val status = response["status"] as String
                     val speed =
                         if (curLocation.speed.toDouble() == 0.0) 0.001 else curLocation.speed.toDouble() //Used to avoid div by zero error
-                    broadcastData(curLocation, status, distance)
+                    broadcastData(curLocation, status, distance, timeLeft,(distance.toDouble() / speed).toString().substringBefore(".")) //Debug last two parameters
                     decideAction(
                         timeLeft.toDouble(),
                         (distance.toDouble() / speed),

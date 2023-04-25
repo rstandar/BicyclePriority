@@ -31,7 +31,8 @@ class MainActivity : ComponentActivity(){
     private val trackingOngoing = mutableStateOf(false)
     private val vibrationsEnabled = mutableStateOf(true)
     private val soundEnabled = mutableStateOf(true)
-
+    private val timeToStateChange = mutableStateOf("0") //Debug
+    private val timeToArrival = mutableStateOf("0") //Debug
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +65,13 @@ class MainActivity : ComponentActivity(){
                     timeText = { TimeText() }
                 ) {
                     if(trackingOngoing.value){
-                        trackingScreenView.TrackingScreen(
+                        trackingScreenView.TrackingScreenDebugMode(
                             stopTracking = stopTracking,
                             location = locationDetailsState,
                             status = statusState,
-                            distance = distanceState
+                            distance = distanceState,
+                            timeToArrival = timeToArrival,
+                            timeToStatusChange = timeToStateChange
                         )
                         Intent(applicationContext, MainService::class.java).apply {//Starts foreground service
                             action = MainService.ACTION_START
@@ -143,6 +146,8 @@ class MainActivity : ComponentActivity(){
                 val speed = intent.getStringExtra("CURRENT_LOCATION_SPEED")
                 val status = intent.getStringExtra("CURRENT_STATUS")
                 val distance = intent.getStringExtra("CURRENT_DISTANCE")
+                timeToStateChange.value = intent.getStringExtra("TIME_STATUS_CHANGE").toString() //Debug
+                timeToArrival.value = intent.getStringExtra("TIME_ARRIVAL").toString() //Debug
                 if(lat != null && long != null && speed != null) {
                     locationDetailsState.value = LocationDetails(lat, long, speed)
                 }

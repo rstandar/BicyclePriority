@@ -39,6 +39,26 @@ class TrackingScreenView {
             }
         }
     }
+    @Composable
+    fun TrackingScreenDebugMode(stopTracking: () -> Unit, location : MutableState<LocationDetails>, status : MutableState<String>, distance : MutableState<String>, timeToStatusChange: MutableState<String>, timeToArrival: MutableState<String>) {
+        ScalingLazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment= Alignment.CenterHorizontally
+        ) {
+            item {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TrackingInformationDebug(speed = location.value.speed, status = status.value, distance = distance.value, timeToStatusChange=timeToStatusChange.value,timeToArrival=timeToArrival.value)
+                    StopButton (stopTracking = stopTracking)
+                }
+            }
+        }
+    }
 
     @Composable
     private fun TrackingInformation (speed: String, status: String, distance: String) {
@@ -70,6 +90,43 @@ class TrackingScreenView {
             ) {
                 TrackingText(text = "Speed: "+(speed.toFloat()*3.6).toString().substringBefore(".")+ " km/h")
                 TrackingText(text = "Status: $status")
+                TrackingText(text = "Distance: $distance m")
+            }
+        }
+    }
+
+    @Composable
+    private fun TrackingInformationDebug (speed: String, status: String, distance: String, timeToStatusChange: String, timeToArrival: String) {
+        if(speed == "Locating"){
+            Card(
+                onClick = { },
+                backgroundPainter = CardDefaults.imageWithScrimBackgroundPainter(
+                    backgroundImagePainter = ColorPainter(wearColorPalette.primary)
+                ),
+                contentColor = wearColorPalette.primary,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(0.dp, 20.dp),
+                enabled = false
+            ) {
+                TrackingText(text = "Locating...")
+            }
+        } else {
+            Card(
+                onClick = { },
+                backgroundPainter = CardDefaults.imageWithScrimBackgroundPainter(
+                    backgroundImagePainter = ColorPainter(wearColorPalette.primary)
+                ),
+                contentColor = wearColorPalette.primary,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(0.dp, 20.dp),
+                enabled = false
+            ) {
+                TrackingText(text = "Speed: "+(speed.toFloat()*3.6).toString().substringBefore(".")+ " km/h")
+                TrackingText(text = "Status: $status")
+                TrackingText(text = "State change: $timeToStatusChange s")
+                TrackingText(text = "Arrival time: $timeToArrival s")
                 TrackingText(text = "Distance: $distance m")
             }
         }
