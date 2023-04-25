@@ -38,7 +38,7 @@ class Vibrations (private val context: Context) {
 
 
     fun decreaseSpeedRepeating(){ //Vibration 5 from vibration tests
-        var timings: LongArray = longArrayOf(s,b-250,s,b-250,s,b-200,s,b-150,s,b-100,s,b-50,s,b,l,b,l,b,l,2500)
+        var timings: LongArray = longArrayOf(s,b-250,s,b-250,s,b-200,s,b-150,s,b-100,s,b-50,s,b,l,b,l,b,l,1000)
         var amplitudes: IntArray = intArrayOf(h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0)
         var repeat = 0 // repeat from beginning
         val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
@@ -47,7 +47,7 @@ class Vibrations (private val context: Context) {
 
 
     fun increaseSpeedRepeating(){ //Vibration 6 from vibration tests
-        var timings: LongArray = longArrayOf(l, b, l, b-100, l, b-150, l, b-200, l, b-250, l, b-250, l,b-250,s,b-250,s,b-250,s,2500)
+        var timings: LongArray = longArrayOf(l, b, l, b-100, l, b-150, l, b-200, l, b-250, l, b-250, l,b-250,s,b-250,s,b-250,s,1000)
         var amplitudes: IntArray = intArrayOf(h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0,h,0)
         var repeat = 0 // repeat from beginning
         val simpleEffect : VibrationEffect = VibrationEffect.createWaveform(timings,amplitudes,repeat)
