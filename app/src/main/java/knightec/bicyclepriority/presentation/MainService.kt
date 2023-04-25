@@ -170,10 +170,17 @@ class MainService : Service() {
                 }
             }
             else { //Red light
-                if(timeToStatusChange - timeToArrival >= -0.5){
+                if(timeToStatusChange - timeToArrival > -15.0 && timeToStatusChange - timeToArrival < -0.5){
+                    if (state != States.NEUTRAL) {
+                        vibrations.stopVibration()
+                        soundPlayer.speedAchievedSound()
+                        state = States.NEUTRAL
+                    }
+                }
+                else if(timeToStatusChange - timeToArrival >= -0.5){ //Cyclist will arrive 0.5s after the light switches to green or earlier. Decrease speed to
                     decreaseSpeed()
                 }
-                else if(distance-distanceCalculationAccelerationCapped(timeToStatusChange+15, accelerationConstant,speed,maxSpeed) < 0 && timeToStatusChange - timeToArrival < -15.0){
+                else if(distance-distanceCalculationAccelerationCapped(timeToStatusChange+15, accelerationConstant,speed,maxSpeed) < 0 && timeToStatusChange - timeToArrival <= -15.0){
                     increaseSpeed()
                 }
                 else {
@@ -187,7 +194,9 @@ class MainService : Service() {
         }
         else {
             if(state != States.NEUTRAL) {
-                soundPlayer.speedAchievedSound()
+                if(distance > distanceLimit) {
+                    soundPlayer.outOfZone()
+                }
                 vibrations.stopVibration()
                 state = States.NEUTRAL
             }

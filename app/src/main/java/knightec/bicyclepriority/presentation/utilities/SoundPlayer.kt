@@ -40,4 +40,15 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer.start()
     }
 
+    fun outOfZone() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved)
+        mediaPlayer.setOnCompletionListener {
+            @Override
+            fun onCompletion(mediaPlayer : MediaPlayer) {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.start()
+    }
+
 }
