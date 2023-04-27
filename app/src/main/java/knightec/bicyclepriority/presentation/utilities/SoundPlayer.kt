@@ -9,10 +9,8 @@ class SoundPlayer(private val context: Context) {
     fun slowDownSoundSwedish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.lower_speed_swedish)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
         mediaPlayer.start()
     }
@@ -20,21 +18,19 @@ class SoundPlayer(private val context: Context) {
     fun speedUpSoundSwedish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.raise_speed_swedish)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
+
         mediaPlayer.start()
+
     }
 
     fun speedAchievedSoundSwedish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved_swedish)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
         mediaPlayer.start()
     }
@@ -42,10 +38,8 @@ class SoundPlayer(private val context: Context) {
     fun slowDownSoundEnglish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.lower_speed_english)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
         mediaPlayer.start()
     }
@@ -53,10 +47,8 @@ class SoundPlayer(private val context: Context) {
     fun speedUpSoundEnglish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.raise_speed_english)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
         mediaPlayer.start()
     }
@@ -64,10 +56,8 @@ class SoundPlayer(private val context: Context) {
     fun speedAchievedSoundEnglish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved_english)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
         mediaPlayer.start()
     }
@@ -75,10 +65,8 @@ class SoundPlayer(private val context: Context) {
     fun outOfZone() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.out_of_zone_effect)
         mediaPlayer.setOnCompletionListener {
-            @Override
-            fun onCompletion(mediaPlayer : MediaPlayer) {
-                mediaPlayer.release()
-            }
+            mediaPlayer.reset()
+            mediaPlayer.release()
         }
         mediaPlayer.start()
     }
