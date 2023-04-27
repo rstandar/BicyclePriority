@@ -19,7 +19,7 @@ import knightec.bicyclepriority.presentation.theme.wearColorPalette
 class HomeScreenView {
 
     @Composable
-    fun HomeScreen (soundEnabled: Boolean, setSoundEnabled: (Boolean) -> Unit, vibrationsEnabled: Boolean, setVibrationEnabled: (Boolean) -> Unit, startActivity: ()->Unit) {
+    fun HomeScreen (englishSelected: Boolean, setEnglishSelected: (Boolean) -> Unit, vibrationsEnabled: Boolean, setVibrationEnabled: (Boolean) -> Unit, startActivity: ()->Unit) {
         ScalingLazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -28,7 +28,7 @@ class HomeScreenView {
             horizontalAlignment= Alignment.CenterHorizontally
         ) {
             item { StartButton(text = "Start",startActivity) }
-            item { HomeScreenToggleSwitch(soundEnabled,setSoundEnabled,"Sound") }
+            item { HomeScreenToggleSwitch(englishSelected,setEnglishSelected,"English") }
             item { HomeScreenToggleSwitch(vibrationsEnabled,setVibrationEnabled,"Vibrations") }
         }
     }
