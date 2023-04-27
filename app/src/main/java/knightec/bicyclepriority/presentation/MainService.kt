@@ -39,15 +39,16 @@ class MainService : Service() {
     private lateinit var soundPlayer: SoundPlayer
     private var curLocation = LocationDetails("0","0","0")
     private var prevLocation = LocationDetails("0","0","0")
-    private val maxSpeed = 8.3 //In m/s, corresponds to approximately 30km/h
+    private val maxSpeed = 6.94 //In m/s, corresponds to approximately 25km/h
     private var englishSelected = true
+    private var lastDistance : Double = 0.0
     enum class States {ACCELERATING, DECELERATING, NEUTRAL }
     private var state : States = States.NEUTRAL
     private val pollHandler = Handler(Looper.getMainLooper())
     private val poll = object: Runnable {
         override fun run(){
             getTrafficLightInformation()
-            pollHandler.postDelayed(this, 1000)
+            pollHandler.postDelayed(this, 500)
         }
     }
     override fun onBind(p0: Intent?): IBinder? {
@@ -145,6 +146,10 @@ class MainService : Service() {
     }
 
     private fun decideAction (timeToStatusChange: Double, timeToArrival: Double, distance: Double, status: String, speed: Double) {
+        if(distance > lastDistance){
+            vibrations.stopVibration()
+            state = States.NEUTRAL
+        }
         var distanceLimit : Double
         var accelerationConstant : Double
         if(speed>6f){ //In m/s, represent ~21.6km/h
@@ -159,7 +164,7 @@ class MainService : Service() {
             distanceLimit = 75.0
             accelerationConstant = 0.4
         }
-        if(distance>5f && distance < distanceLimit) {
+        if(distance>0.0 && distance < distanceLimit) {
             if(status == "green") { //Green light
                 if (timeToStatusChange - timeToArrival < -15.0 || timeToStatusChange - timeToArrival > 0.5) {
                     if (state != States.NEUTRAL) {
@@ -200,14 +205,15 @@ class MainService : Service() {
         }
         else {
             if(state != States.NEUTRAL) {
-                /* Out-commented during user testing
-                if(distance > distanceLimit) {
-                    soundPlayer.outOfZone()
-                } */
+                if(state == States.DECELERATING) {
+                    speedAchievedSound()
+                }
                 vibrations.stopVibration()
                 state = States.NEUTRAL
             }
         }
+
+        lastDistance = distance
     }
 
     private fun increaseSpeed(){
@@ -261,7 +267,7 @@ class MainService : Service() {
     }
 
     private fun startLocationUpdates(){
-        locationClient.getLocationUpdates(1000).catch { e -> e.printStackTrace() }.onEach {  location ->
+        locationClient.getLocationUpdates(500).catch { e -> e.printStackTrace() }.onEach {  location ->
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
             val speed = location.speed.toString()
@@ -269,7 +275,7 @@ class MainService : Service() {
 
             curLocation.speed = speed
             var dist = calculateDistance(tmpCurLocation,prevLocation)
-            if(dist >2f) {
+            if(dist > 1.5f) {
                 prevLocation = curLocation
                 curLocation = tmpCurLocation
             }
