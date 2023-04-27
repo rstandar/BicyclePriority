@@ -19,7 +19,6 @@ import knightec.bicyclepriority.presentation.theme.BicyclePriorityTheme
 import knightec.bicyclepriority.presentation.utilities.SoundPlayer
 import knightec.bicyclepriority.presentation.view.HomeScreenView
 import knightec.bicyclepriority.presentation.view.TrackingScreenView
-import knightec.bicyclepriority.presentation.viewmodel.TrafficLightViewModel
 
 
 class MainActivity : ComponentActivity(){
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity(){
     private lateinit var soundPlayer: SoundPlayer
     private val trackingOngoing = mutableStateOf(false)
     private val vibrationsEnabled = mutableStateOf(true)
-    private val soundEnabled = mutableStateOf(true)
+    private val englishSelected = mutableStateOf(true)
     private val timeToStateChange = mutableStateOf("0") //Debug
     private val timeToArrival = mutableStateOf("0") //Debug
 
@@ -39,7 +38,7 @@ class MainActivity : ComponentActivity(){
         if (savedInstanceState != null) {
             trackingOngoing.value = savedInstanceState.getBoolean("trackingOngoing")
             vibrationsEnabled.value = savedInstanceState.getBoolean("vibrationsEnabled")
-            soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
+            englishSelected.value = savedInstanceState.getBoolean("englishSelected")
         }
 
         val homeScreenView = HomeScreenView()
@@ -57,7 +56,7 @@ class MainActivity : ComponentActivity(){
         setContent {
 
             BicyclePriorityTheme {
-                val setSoundEnabled = fun(soundBool: Boolean) {soundEnabled.value = soundBool}
+                val setEnglishSelected = fun(soundBool: Boolean) {englishSelected.value = soundBool}
                 val setVibrationEnabled = fun(vibrationBool: Boolean) {vibrationsEnabled.value = vibrationBool}
                 val startTracking = fun(){trackingOngoing.value = true}
                 val stopTracking = fun(){trackingOngoing.value = false}
@@ -75,12 +74,13 @@ class MainActivity : ComponentActivity(){
                         )
                         Intent(applicationContext, MainService::class.java).apply {//Starts foreground service
                             action = MainService.ACTION_START
+                            putExtra("Eng",englishSelected.value)
                             startService(this)
                         }
                     }else {
                         homeScreenView.HomeScreen(
-                            soundEnabled = soundEnabled.value,
-                            setSoundEnabled = setSoundEnabled,
+                            englishSelected = englishSelected.value,
+                            setEnglishSelected = setEnglishSelected,
                             vibrationsEnabled = vibrationsEnabled.value,
                             setVibrationEnabled = setVibrationEnabled,
                             startActivity = startTracking
@@ -100,14 +100,14 @@ class MainActivity : ComponentActivity(){
         super.onSaveInstanceState(savedInstanceState)
         savedInstanceState.putBoolean("trackingOngoing", trackingOngoing.value)
         savedInstanceState.putBoolean("vibrationsEnabled", vibrationsEnabled.value)
-        savedInstanceState.putBoolean("soundEnabled", soundEnabled.value)
+        savedInstanceState.putBoolean("englishSelected", englishSelected.value)
     }
 
     override fun onRestoreInstanceState( savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         trackingOngoing.value = savedInstanceState.getBoolean("trackingOngoing")
         vibrationsEnabled.value = savedInstanceState.getBoolean("vibrationsEnabled")
-        soundEnabled.value = savedInstanceState.getBoolean("soundEnabled")
+        englishSelected.value = savedInstanceState.getBoolean("englishSelected")
     }
 
     override fun onDestroy() {

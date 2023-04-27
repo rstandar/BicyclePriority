@@ -6,7 +6,7 @@ import knightec.bicyclepriority.R
 
 class SoundPlayer(private val context: Context) {
 
-    fun slowDownSound() {
+    fun slowDownSoundSwedish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.lower_speed_swedish)
         mediaPlayer.setOnCompletionListener {
             @Override
@@ -17,9 +17,8 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer.start()
     }
 
-    fun speedUpSound() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.raise_speed_swedish
-        )
+    fun speedUpSoundSwedish() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.raise_speed_swedish)
         mediaPlayer.setOnCompletionListener {
             @Override
             fun onCompletion(mediaPlayer : MediaPlayer) {
@@ -29,7 +28,7 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer.start()
     }
 
-    fun speedAchievedSound() {
+    fun speedAchievedSoundSwedish() {
         val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved_swedish)
         mediaPlayer.setOnCompletionListener {
             @Override
@@ -40,8 +39,41 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer.start()
     }
 
+    fun slowDownSoundEnglish() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.lower_speed_english)
+        mediaPlayer.setOnCompletionListener {
+            @Override
+            fun onCompletion(mediaPlayer : MediaPlayer) {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.start()
+    }
+
+    fun speedUpSoundEnglish() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.raise_speed_english)
+        mediaPlayer.setOnCompletionListener {
+            @Override
+            fun onCompletion(mediaPlayer : MediaPlayer) {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.start()
+    }
+
+    fun speedAchievedSoundEnglish() {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved_english)
+        mediaPlayer.setOnCompletionListener {
+            @Override
+            fun onCompletion(mediaPlayer : MediaPlayer) {
+                mediaPlayer.release()
+            }
+        }
+        mediaPlayer.start()
+    }
+
     fun outOfZone() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.speed_achieved)
+        val mediaPlayer = MediaPlayer.create(context, R.raw.out_of_zone_effect)
         mediaPlayer.setOnCompletionListener {
             @Override
             fun onCompletion(mediaPlayer : MediaPlayer) {

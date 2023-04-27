@@ -40,6 +40,7 @@ class MainService : Service() {
     private var curLocation = LocationDetails("0","0","0")
     private var prevLocation = LocationDetails("0","0","0")
     private val maxSpeed = 8.3 //In m/s, corresponds to approximately 30km/h
+    private var englishSelected = true
     enum class States {ACCELERATING, DECELERATING, NEUTRAL }
     private var state : States = States.NEUTRAL
     private val pollHandler = Handler(Looper.getMainLooper())
@@ -63,7 +64,10 @@ class MainService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when(intent?.action) {
-            ACTION_START -> start()
+            ACTION_START -> {
+                start()
+                englishSelected = intent.getBooleanExtra("Eng",true)
+            }
             ACTION_STOP -> stop()
         }
         return super.onStartCommand(intent, flags, startId)
@@ -160,7 +164,7 @@ class MainService : Service() {
                 if (timeToStatusChange - timeToArrival < -15.0 || timeToStatusChange - timeToArrival > 0.5) {
                     if (state != States.NEUTRAL) {
                         vibrations.stopVibration()
-                        soundPlayer.speedAchievedSound()
+                        speedAchievedSound()
                         state = States.NEUTRAL
                     }
                 }
@@ -175,7 +179,7 @@ class MainService : Service() {
                 if(timeToStatusChange - timeToArrival > -15.0 && timeToStatusChange - timeToArrival < -0.5){
                     if (state != States.NEUTRAL) {
                         vibrations.stopVibration()
-                        soundPlayer.speedAchievedSound()
+                        speedAchievedSound()
                         state = States.NEUTRAL
                     }
                 }
@@ -188,7 +192,7 @@ class MainService : Service() {
                 else {
                     if (state != States.NEUTRAL) {
                         vibrations.stopVibration()
-                        soundPlayer.speedAchievedSound()
+                        speedAchievedSound()
                         state = States.NEUTRAL
                     }
                 }
@@ -209,7 +213,12 @@ class MainService : Service() {
     private fun increaseSpeed(){
         if(state != States.ACCELERATING){
             state = States.ACCELERATING
-            soundPlayer.speedUpSound()
+            if(englishSelected) {
+                soundPlayer.speedUpSoundEnglish()
+            }
+            else{
+                soundPlayer.speedUpSoundSwedish()
+            }
             vibrations.increaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
     }
@@ -217,10 +226,25 @@ class MainService : Service() {
     private fun decreaseSpeed(){
         if(state != States.DECELERATING){
             state = States.DECELERATING
-            soundPlayer.slowDownSound()
+            if(englishSelected) {
+                soundPlayer.slowDownSoundEnglish()
+            }
+            else{
+                soundPlayer.slowDownSoundSwedish()
+            }
             vibrations.decreaseSpeedRepeating() //Start vibration pattern, will repeat until terminated
         }
     }
+
+    private fun speedAchievedSound(){
+        if(englishSelected) {
+            soundPlayer.speedAchievedSoundEnglish()
+        }
+        else{
+            soundPlayer.speedAchievedSoundSwedish()
+        }
+    }
+
 
 
     /**
