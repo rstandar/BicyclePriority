@@ -74,6 +74,7 @@ class MainActivity : ComponentActivity(){
                         )
                         Intent(applicationContext, MainService::class.java).apply {//Starts foreground service
                             action = MainService.ACTION_START
+                            putExtra("Eng",englishSelected.value)
                             startService(this)
                         }
                     }else {
@@ -99,14 +100,14 @@ class MainActivity : ComponentActivity(){
         super.onSaveInstanceState(savedInstanceState)
         savedInstanceState.putBoolean("trackingOngoing", trackingOngoing.value)
         savedInstanceState.putBoolean("vibrationsEnabled", vibrationsEnabled.value)
-        savedInstanceState.putBoolean("soundEnabled", englishSelected.value)
+        savedInstanceState.putBoolean("englishSelected", englishSelected.value)
     }
 
     override fun onRestoreInstanceState( savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         trackingOngoing.value = savedInstanceState.getBoolean("trackingOngoing")
         vibrationsEnabled.value = savedInstanceState.getBoolean("vibrationsEnabled")
-        englishSelected.value = savedInstanceState.getBoolean("soundEnabled")
+        englishSelected.value = savedInstanceState.getBoolean("englishSelected")
     }
 
     override fun onDestroy() {
